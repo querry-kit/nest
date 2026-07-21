@@ -1,4 +1,5 @@
 export { CHECK_POLICIES_KEY, CheckPolicies } from './casl/check-policies.decorator';
+export { filterCaslFields } from './casl/dto-filter';
 export { createCaslAccessibleWhere } from './casl/index';
 export { PoliciesGuard } from './casl/policies.guard';
 export { ApiParamId } from './decorators/params/index';
@@ -42,7 +43,7 @@ export {
 } from './util/index';
 export { parseQueryObject } from './util/query/index';
 
-export type { CaslAccessibleWhereOptions, PolicyHandler } from './casl/index';
+export type { CaslAccessibleWhereOptions, CaslDtoFilterOptions, CaslFieldAbility, PolicyHandler } from './casl/index';
 export type { ApiResourceQueryOptions } from './decorators/query/index';
 export type { ApiPaginatedResponseOptions } from './decorators/responses/api-paginated-response.decorator';
 export type {

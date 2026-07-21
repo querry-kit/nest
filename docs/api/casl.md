@@ -1,10 +1,10 @@
 ---
-description: 'Optional CASL Prisma adapter and policy helpers.'
+description: 'Optional CASL Prisma adapter, policy helpers, and DTO field filtering.'
 ---
 
 # CASL
 
-The query service is CASL-agnostic until an app wires an accessibility resolver into it.
+The query service is CASL-agnostic until an app wires an accessibility resolver into it. The CASL helpers cover route policies, Prisma read filters, and field-level DTO filtering; applications retain ownership of their ability factories and subjects.
 
 ```sh
 pnpm add @casl/ability @casl/prisma
@@ -79,6 +79,36 @@ async query() {}
 ```
 
 `PoliciesGuard` throws a Nest `ForbiddenException` when no ability is present or any policy returns `false`.
+
+## DTO Field Filtering
+
+Use `filterCaslFields` at the end of a DTO mapper when field permissions should affect the JSON response. It returns a shallow copy, preserves the DTO prototype, and never mutates the mapper's DTO.
+
+```ts
+import { filterCaslFields } from '@querry-kit/nest/casl';
+
+class ProjectDTO {
+  static fromModel(project: Project, ability?: AppAbility): ProjectDTO {
+    const dto = Object.assign(new ProjectDTO(), {
+      id: project.id,
+      name: project.name,
+      internalBudget: project.internalBudget,
+    });
+
+    return filterCaslFields(dto, 'Project', ability);
+  }
+}
+```
+
+The helper first checks the special CASL field `all`. If it is not allowed, it checks every enumerable DTO field individually. Conditional CASL rules receive the DTO as a CASL `subject`, so they can inspect its values.
+
+DTO field filtering protects the serialized response only. Keep passing the ability to `QueryService` or `ResourceQuery` as well so the Prisma query itself is restricted.
+
+The default action is `read`. Applications that use a differently cased or enum-backed action must pass it explicitly:
+
+```ts
+return filterCaslFields(dto, RoleSubject.PROJECT, ability, { action: RoleAction.READ });
+```
 
 ## CASL Prisma Versions
 

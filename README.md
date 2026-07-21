@@ -10,6 +10,7 @@
 
 [![build](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/build.yml?branch=main&label=build&logo=githubactions&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/build.yml)
 [![test](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/test.yml?branch=main&label=test&logo=jest&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/test.yml)
+[![coverage](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/test.yml?branch=main&label=coverage&logo=jest&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/test.yml)
 [![lint](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/lint.yml?branch=main&label=lint&logo=eslint&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/lint.yml)
 [![docs](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/docs.yml?branch=main&label=docs&logo=vitepress&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/docs.yml)
 [![changesets](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/changesets.yml?branch=main&label=changesets&logo=changesets&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/changesets.yml)
@@ -131,7 +132,7 @@ export class CustomersService extends QueryService<typeof PrismaService.prototyp
 Focused subpaths are available for smaller imports:
 
 ```ts
-import { createCaslAccessibleWhere } from '@querry-kit/nest/casl';
+import { createCaslAccessibleWhere, filterCaslFields } from '@querry-kit/nest/casl';
 import { ApiResourceQuery } from '@querry-kit/nest/decorators';
 import { Fields } from '@querry-kit/nest/fields';
 import { parseObject } from '@querry-kit/nest/object';
@@ -152,6 +153,14 @@ super(prisma.customer, {
 ```
 
 When an ability is passed to `query`, the service combines the CASL where clause with user filters as `{ AND: [accessibleWhere, parsedWhere] }`.
+
+For field-level response permissions, filter the completed DTO without mutating it:
+
+```ts
+return filterCaslFields(dto, 'Customer', ability);
+```
+
+The helper uses the `read` action by default. Pass `{ action: RoleAction.READ }` when an application uses uppercase or enum-backed actions. It filters serialized DTO fields only; keep passing the ability to `QueryService` to constrain database reads too.
 
 ## 🎯 Fields
 
@@ -222,8 +231,11 @@ pnpm install
 pnpm lint
 pnpm check
 pnpm test
+pnpm test:coverage
 pnpm build
 pnpm examples:check
 pnpm examples:build
 pnpm docs:build
 ```
+
+`pnpm test:coverage` collects all source files, prints the coverage summary, and writes HTML and LCOV reports to `coverage/`. GitHub Actions runs the same command and retains the report as a workflow artifact.

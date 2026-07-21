@@ -115,6 +115,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --config ./jest.config.cjs",
+    "test:coverage": "jest --config ./jest.config.cjs --coverage",
     "test:watch": "jest --config ./jest.config.cjs --watch",
     "examples:check": "tsc -p examples/books-api/tsconfig.json --noEmit",
     "examples:build": "tsc -p examples/books-api/tsconfig.build.json",

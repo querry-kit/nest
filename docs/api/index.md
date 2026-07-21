@@ -19,7 +19,7 @@ import {
 } from '@querry-kit/nest';
 
 import { parseObject } from '@querry-kit/nest/object';
-import { createCaslAccessibleWhere } from '@querry-kit/nest/casl';
+import { createCaslAccessibleWhere, filterCaslFields } from '@querry-kit/nest/casl';
 ```
 
 ## Main Areas
@@ -30,7 +30,7 @@ import { createCaslAccessibleWhere } from '@querry-kit/nest/casl';
 | `Fields`             | Low-level parsing, validation, include generation, and response projection.                                              |
 | `QueryService`       | Prisma-compatible read operations, pagination, query normalization, and error mapping.                                   |
 | DTOs and pagination  | Controller query DTOs and `PaginatedDTO` response wrappers.                                                              |
-| CASL                 | Optional `accessibleBy` integration and policy guard helpers.                                                            |
+| CASL                 | Optional `accessibleBy` integration, policy guards, and field-level DTO filtering.                                     |
 | Decorators and pipes | OpenAPI helpers for query parameters and responses, query transformation, body normalization, and reusable API metadata. |
 | Object utilities     | Query object parsing, object diffing, Decimal serialization, and predicates.                                             |
 
@@ -41,7 +41,7 @@ import { Fields } from '@querry-kit/nest/fields';
 import { QueryDTO } from '@querry-kit/nest/dto';
 import { PageMetaDTO } from '@querry-kit/nest/pagination';
 import { QueryService } from '@querry-kit/nest/query-service';
-import { createCaslAccessibleWhere } from '@querry-kit/nest/casl';
+import { createCaslAccessibleWhere, filterCaslFields } from '@querry-kit/nest/casl';
 import { ApiPaginatedResponse, ApiParamId } from '@querry-kit/nest/decorators';
 import { QueryTransformPipe } from '@querry-kit/nest/pipes';
 import { parseObject } from '@querry-kit/nest/object';
