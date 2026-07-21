@@ -23,8 +23,17 @@ export function createCaslAccessibleWhere<TAbility = AnyAbility, TSubject = stri
 
   return (ability, subject) => {
     const records = (accessibleBy as (ability: unknown, action: unknown) => AccessibleRecordsLike)(ability, action);
-    if (typeof records.ofType === 'function') {
-      return records.ofType(subject);
+    let ofType: AccessibleRecordsLike['ofType'];
+
+    try {
+      ofType = records.ofType;
+    } catch {
+      // CASL Prisma v1 uses a Proxy which treats `ofType` as a subject lookup.
+      return records[String(subject)];
+    }
+
+    if (typeof ofType === 'function') {
+      return ofType.call(records, subject);
     }
 
     return records[String(subject)];

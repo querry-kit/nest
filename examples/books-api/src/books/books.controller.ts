@@ -15,7 +15,7 @@ import {
   prepareFieldsQuery,
 } from '@querry-kit/nest';
 import { BookDTO, CreateBookDTO, UpdateBookDTO, type BookModel } from './book.dto.js';
-import { BooksService, type BookTypeMap, type DemoAbility } from './books.service.js';
+import { BookAction, BookSubject, BooksService, type BookTypeMap, type DemoAbility } from './books.service.js';
 
 type DemoRequest = {
   ability: DemoAbility;
@@ -28,7 +28,7 @@ export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Get()
-  @CheckPolicies<DemoAbility>((ability) => ability.can('read', 'Book'))
+  @CheckPolicies<DemoAbility>((ability) => ability.can(BookAction.Read, BookSubject))
   @ApiOperation({ summary: 'Query published books' })
   @ApiResourceQuery()
   @ApiPaginatedResponse({ description: 'Paginated list of published books', model: BookDTO })
@@ -45,7 +45,7 @@ export class BooksController {
   }
 
   @Get(':id')
-  @CheckPolicies<DemoAbility>((ability) => ability.can('read', 'Book'))
+  @CheckPolicies<DemoAbility>((ability) => ability.can(BookAction.Read, BookSubject))
   @ApiParamId({ description: 'Book ID', name: 'id' })
   @ApiOperation({ summary: 'Find a published book by ID' })
   @ApiFieldsQuery()
@@ -67,7 +67,7 @@ export class BooksController {
   }
 
   @Post()
-  @CheckPolicies<DemoAbility>((ability) => ability.can('create', 'Book'))
+  @CheckPolicies<DemoAbility>((ability) => ability.can(BookAction.Create, BookSubject))
   @ApiOperation({ summary: 'Create a book' })
   @ApiFieldsQuery()
   @ApiCreatedResponse({ description: 'The created book', type: BookDTO })
@@ -83,7 +83,7 @@ export class BooksController {
   }
 
   @Patch(':id')
-  @CheckPolicies<DemoAbility>((ability) => ability.can('update', 'Book'))
+  @CheckPolicies<DemoAbility>((ability) => ability.can(BookAction.Update, BookSubject))
   @ApiParamId({ description: 'Book ID', name: 'id' })
   @ApiOperation({ summary: 'Update a book' })
   @ApiFieldsQuery()
@@ -93,15 +93,20 @@ export class BooksController {
     forbiddenCodes: ['InsufficientPermissions'],
     notFoundCodes: ['BookNotFound'],
   })
-  async update(@Param('id') id: string, @Body() data: UpdateBookDTO, @Query() query: FindByIdDTO<BookTypeMap>) {
+  async update(
+    @Param('id') id: string,
+    @Body() data: UpdateBookDTO,
+    @Req() req: DemoRequest,
+    @Query() query: FindByIdDTO<BookTypeMap>,
+  ) {
     const prepared = prepareFieldsQuery(query, BookDTO);
-    const dto = BookDTO.fromModel(await this.booksService.update(id, data, prepared.query));
+    const dto = BookDTO.fromModel(await this.booksService.update(id, data, prepared.query, req.ability));
 
     return Fields.project(dto, prepared.projection);
   }
 
   @Delete(':id')
-  @CheckPolicies<DemoAbility>((ability) => ability.can('delete', 'Book'))
+  @CheckPolicies<DemoAbility>((ability) => ability.can(BookAction.Delete, BookSubject))
   @ApiParamId({ description: 'Book ID', name: 'id' })
   @ApiOperation({ summary: 'Delete a book' })
   @ApiFieldsQuery()

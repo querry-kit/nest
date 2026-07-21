@@ -12,6 +12,12 @@ pnpm add @casl/ability @casl/prisma
 
 ## Service Wiring
 
+The complete runnable service from the Books API is included below. Its `super` call wires the CASL subject and the action-aware Prisma resolver into every ability-aware read method. It also shows that a conditional write rule must be checked against the concrete record before mutating it.
+
+<<< ../../examples/books-api/src/books/books.service.ts
+
+For a Prisma service, replace `BookDelegate` with your generated delegate type (for example `typeof PrismaService.prototype.project`) while retaining the same `subject` and `accessibleWhere` options:
+
 ```ts
 import { createCaslAccessibleWhere } from '@querry-kit/nest/casl';
 import type { QueryOptionsMap } from '@querry-kit/nest/dto';
@@ -28,7 +34,7 @@ export class ProjectsService extends QueryService<
   constructor(prisma: PrismaService) {
     super(prisma.project, {
       subject: 'Project',
-      accessibleWhere: createCaslAccessibleWhere({ action: 'read' }),
+      accessibleWhere: createCaslAccessibleWhere<AppAbility, 'Project'>({ action: 'read' }),
     });
   }
 }

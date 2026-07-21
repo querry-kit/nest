@@ -84,7 +84,7 @@ describe('ApiErrorResponses decorator', () => {
           }),
         }),
         examples: expect.objectContaining({
-          0: expect.objectContaining({
+          FileUploadNoFileProvided: expect.objectContaining({
             value: expect.objectContaining({
               statusCode: HttpStatus.BAD_REQUEST,
               message: 'FileUploadNoFileProvided',
@@ -97,7 +97,7 @@ describe('ApiErrorResponses decorator', () => {
     expect(mockApiUnauthorizedResponse).toHaveBeenCalledWith(
       expect.objectContaining({
         examples: expect.objectContaining({
-          0: expect.objectContaining({
+          AuthInvalidToken: expect.objectContaining({
             summary: 'Token invalid',
             value: expect.objectContaining({
               statusCode: HttpStatus.UNAUTHORIZED,
@@ -138,7 +138,7 @@ describe('ApiErrorResponses decorator', () => {
       expect.objectContaining({
         description: 'Too Many Requests',
         examples: expect.objectContaining({
-          0: expect.objectContaining({
+          AuthTokenExpired: expect.objectContaining({
             summary: 'Slow down',
           }),
         }),

@@ -1,4 +1,4 @@
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiQuery } from '@nestjs/swagger';
 
 /**
@@ -11,6 +11,31 @@ export type ApiResourceQueryOptions = {
 
 const queryObjectSchema = {
   oneOf: [{ type: 'object' }, { type: 'string' }],
+};
+
+const invalidResourceQueryDescription =
+  'Invalid fields syntax, unknown fields, invalid include/select, or invalid query values.';
+
+const invalidResourceQueryResponse = {
+  description: invalidResourceQueryDescription,
+  schema: {
+    type: 'object',
+    properties: {
+      statusCode: { type: 'number', default: HttpStatus.BAD_REQUEST },
+      error: { type: 'string', default: 'Bad Request' },
+      message: { type: 'string' },
+    },
+  },
+  examples: {
+    invalidResourceQuery: {
+      summary: 'Invalid resource query',
+      value: {
+        statusCode: HttpStatus.BAD_REQUEST,
+        error: 'Bad Request',
+        message: invalidResourceQueryDescription,
+      },
+    },
+  },
 };
 
 /**
@@ -60,9 +85,7 @@ export function ApiResourceQuery(options: ApiResourceQueryOptions = {}): MethodD
       schema: { oneOf: [{ type: 'string' }, { type: 'array' }] },
       description: 'Prisma distinct field or fields.',
     }),
-    ApiBadRequestResponse({
-      description: 'Invalid fields syntax, unknown fields, invalid include/select, or invalid query values.',
-    }),
+    ApiBadRequestResponse(invalidResourceQueryResponse),
   ];
 
   if (options.pagination ?? true) {
