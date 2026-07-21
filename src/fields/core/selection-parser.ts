@@ -21,13 +21,17 @@ export class FieldsSelectionParser {
    * @throws {FieldsBadRequestException} If the syntax is invalid.
    */
   parse(): FieldsProjection {
+    if (this.input === '') {
+      return {};
+    }
+
     this.skipWhitespace();
 
     if (!this.hasMore()) {
       throw this.error('fields cannot be empty');
     }
 
-    const projection = this.parseSelectionList();
+    const projection = this.peek() === '{' ? this.parseWrappedSelection() : this.parseSelectionList();
 
     this.skipWhitespace();
     if (this.hasMore()) {
@@ -42,7 +46,7 @@ export class FieldsSelectionParser {
    *
    * @returns {FieldsProjection} The parsed selection set.
    */
-  private parseSelectionList(): FieldsProjection {
+  private parseSelectionList(allowEmpty = false): FieldsProjection {
     const selection: FieldsProjection = {};
 
     while (true) {
@@ -58,7 +62,7 @@ export class FieldsSelectionParser {
       let child: FieldsProjection | true = true;
       if (this.peek() === '{') {
         this.consume('{');
-        child = this.parseSelectionList();
+        child = this.parseSelectionList(true);
         this.skipWhitespace();
         this.consume('}');
       }
@@ -84,9 +88,23 @@ export class FieldsSelectionParser {
       throw this.error('expected comma or closing brace');
     }
 
-    if (Object.keys(selection).length === 0) {
+    if (!allowEmpty && Object.keys(selection).length === 0) {
       throw this.error('selection set cannot be empty');
     }
+
+    return selection;
+  }
+
+  /**
+   * Parses an optional outer selection wrapper.
+   *
+   * @returns {FieldsProjection} The selection inside the outer braces.
+   */
+  private parseWrappedSelection(): FieldsProjection {
+    this.consume('{');
+    const selection = this.parseSelectionList(true);
+    this.skipWhitespace();
+    this.consume('}');
 
     return selection;
   }

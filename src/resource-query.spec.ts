@@ -21,7 +21,7 @@ describe('ResourceQuery', () => {
 
     const result = await ResourceQuery.query({
       service,
-      query: { fields: 'id,profile{id}', include: { profile: { where: { active: 'true' } } } },
+      query: { fields: '{id,profile{id}}', include: { profile: { where: { active: 'true' } } } },
       schema,
       ability,
       map: async (item: { id: string; name: string; profile: { id: string; email: string } }, passedAbility) => ({
@@ -34,7 +34,7 @@ describe('ResourceQuery', () => {
 
     expect(service.query).toHaveBeenCalledWith(
       {
-        fields: 'id,profile{id}',
+        fields: '{id,profile{id}}',
         include: { profile: { where: { active: true } } },
       },
       ability,
@@ -75,6 +75,24 @@ describe('ResourceQuery', () => {
       items: [{ id: '1', profile: { id: 'p1' } }],
       meta: { page: 2, perPage: 10, itemCount: 12, pageCount: 2 },
     });
+  });
+
+  it('projects empty paginated envelopes and empty item selections', async () => {
+    const service = {
+      query: jest.fn().mockResolvedValue({
+        items: [{ id: '1', name: 'Ada' }],
+        pageMeta: new PageMetaDTO({ itemCount: 1, pageOptions: { page: 3, perPage: 10 } }),
+      }),
+      findById: jest.fn(),
+    };
+    const map = (item: { id: string; name: string }) => item;
+
+    for (const fields of ['', '{}']) {
+      await expect(ResourceQuery.query({ service, query: { fields }, schema, map })).resolves.toEqual({});
+    }
+    await expect(
+      ResourceQuery.query({ service, query: { fields: 'items{},meta{page}' }, schema, map }),
+    ).resolves.toEqual({ items: [{}], meta: { page: 3 } });
   });
 
   it('merges endpoint includes with client includes when fields are omitted', async () => {
@@ -139,5 +157,22 @@ describe('ResourceQuery', () => {
       ability,
     );
     expect(result).toEqual({ profile: { email: 'ada@example.test' } });
+  });
+
+  it('projects an explicit empty fields value for detail responses', async () => {
+    const service = {
+      query: jest.fn(),
+      findById: jest.fn().mockResolvedValue({ id: '1', name: 'Ada' }),
+    };
+
+    await expect(
+      ResourceQuery.findById({
+        service,
+        id: '1',
+        query: { fields: '' },
+        schema,
+        map: (item: { id: string; name: string }) => item,
+      }),
+    ).resolves.toEqual({});
   });
 });

@@ -62,6 +62,16 @@ describe('prepareFieldsQuery', () => {
     });
   });
 
+  it('keeps an explicit empty projection while preserving required includes', () => {
+    const prepared = prepareFieldsQuery({ fields: '' }, schema, { baseInclude: { profile: true } });
+
+    expect(prepared.projection).toEqual({});
+    expect(prepared.query).toEqual({
+      fields: '',
+      include: { profile: true },
+    });
+  });
+
   it('merges endpoint includes, client includes and fields-generated includes', () => {
     const prepared = prepareFieldsQuery(
       {

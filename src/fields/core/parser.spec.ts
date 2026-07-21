@@ -19,10 +19,17 @@ describe('FieldsParser', () => {
     expect(FieldsParser.parse('id,id{nested}')).toEqual({ id: true });
   });
 
-  it('returns undefined for absent values', () => {
+  it('returns undefined for omitted values and an empty projection for an explicit empty string', () => {
     expect(FieldsParser.parse(undefined)).toBeUndefined();
     expect(FieldsParser.parse(null)).toBeUndefined();
-    expect(FieldsParser.parse('')).toBeUndefined();
+    expect(FieldsParser.parse('')).toEqual({});
+  });
+
+  it('accepts optional outer braces and empty selection sets', () => {
+    expect(FieldsParser.parse('{id,email}')).toEqual({ id: true, email: true });
+    expect(FieldsParser.parse('{id} ')).toEqual({ id: true });
+    expect(FieldsParser.parse('{}')).toEqual({});
+    expect(FieldsParser.parse('profile{}')).toEqual({ profile: {} });
   });
 
   it('allows whitespace around tokens', () => {
@@ -37,7 +44,7 @@ describe('FieldsParser', () => {
     expect(() => FieldsParser.parse('   ')).toThrow(FieldsBadRequestException);
     expect(() => FieldsParser.parse('1invalid')).toThrow(FieldsBadRequestException);
     expect(() => FieldsParser.parse('id email')).toThrow(FieldsBadRequestException);
+    expect(() => FieldsParser.parse('{id}!')).toThrow(FieldsBadRequestException);
     expect(() => FieldsParser.parse('profile{id')).toThrow(FieldsBadRequestException);
-    expect(() => FieldsParser.parse('profile{}')).toThrow(FieldsBadRequestException);
   });
 });

@@ -20,9 +20,11 @@ The server still validates every requested field against an explicit schema or S
 | Remaining characters may also contain digits. | `line1`, `profile2` |
 | Commas separate sibling selections. | `id,email` |
 | Braces select nested relation fields. | `profile{firstName}` |
+| Outer braces are optional. | `id,email` or `{id,email}` |
+| Empty selections intentionally remove all fields at that level. | `{}`, `profile{}` |
 | Whitespace around tokens is ignored. | `id, profile { firstName }` |
 
-Empty nested selections such as `profile{}` and unsupported field-name characters are rejected before validation.
+An explicit empty query value (`fields=`) parses as `{}` and projects an empty response. Whitespace-only values remain invalid. For paginated responses, `{}` projects the complete envelope to `{}`, while `items{}` yields empty item objects and `items{},meta{page}` preserves only `meta.page`.
 
 ## Validation
 

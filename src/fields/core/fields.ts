@@ -30,7 +30,7 @@ export class Fields {
    * @param {unknown} rawFields The raw query parameter value.
    * @param {FieldSchema} schema The allowed DTO field schema.
    * @param {FieldsParseOptions} [options] The validation options.
-   * @returns {FieldsProjection | undefined} The parsed projection or `undefined`.
+   * @returns {FieldsProjection | undefined} The parsed projection, an empty projection for an explicit empty string, or `undefined` when omitted.
    * @throws {FieldsBadRequestException} If parsing or validation fails.
    */
   static parseAndValidate(
