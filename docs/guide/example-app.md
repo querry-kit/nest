@@ -94,12 +94,12 @@ Every route accepts `fields`. Unknown DTO fields return HTTP 400 during fields v
 
 ## Source Layout
 
-| File | Purpose |
-| ---- | ------- |
-| `book.dto.ts` | Public DTOs and in-memory model types. |
-| `book.delegate.ts` | Prisma-like in-memory delegate consumed by `QueryService`. |
-| `books.service.ts` | `QueryService` subclass with demo access filtering. |
-| `books.controller.ts` | CRM-style controller using `ResourceQuery` and decorators. |
-| `main.ts` | Swagger, fields errors, and query transformation bootstrap. |
+| File                        | Purpose                                                     |
+| --------------------------- | ----------------------------------------------------------- |
+| `books/book.dto.ts`         | Public DTOs and in-memory model types.                      |
+| `books/book.delegate.ts`    | Prisma-like in-memory delegate consumed by `QueryService`.  |
+| `books/books.service.ts`    | `QueryService` subclass with demo access filtering.         |
+| `books/books.controller.ts` | CRM-style controller using `ResourceQuery` and decorators.  |
+| `main.ts`                   | Swagger, fields errors, and query transformation bootstrap. |
 
 See the complete [NestJS main.ts](/guide/main-bootstrap) and [CRUD Controller](/guide/crud-controller) examples for copyable versions.

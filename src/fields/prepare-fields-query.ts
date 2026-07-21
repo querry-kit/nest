@@ -1,37 +1,13 @@
 import { buildFieldSchemaFromDto } from './core/dto-schema';
 import { Fields } from './core/fields';
 import { mergeInclude } from './core/include';
-import type { DtoClass } from './types/dto-schema.types';
-import type { FieldsParseOptions } from './types/fields.types';
-import type { FieldSchema, FieldsProjection } from './types/schema.types';
-
-/**
- * Field schema source accepted by fields query helpers.
- */
-export type SchemaOrDto = FieldSchema | DtoClass;
-
-/**
- * Options for {@link prepareFieldsQuery}.
- */
-export type PrepareFieldsQueryOptions = FieldsParseOptions & {
-  /** Include configuration required by the endpoint before client fields are applied. */
-  baseInclude?: unknown;
-};
-
-/**
- * Prepared query and parsed fields projection.
- */
-export type PreparedFieldsQuery<TQuery> = {
-  /** Query copy with generated include data merged in when needed. */
-  query: TQuery;
-  /** Parsed projection, or `undefined` when no fields parameter was supplied. */
-  projection: FieldsProjection | undefined;
-};
-
-type FieldsQueryLike = {
-  fields?: unknown;
-  include?: unknown;
-};
+import type {
+  FieldsQueryLike,
+  PreparedFieldsQuery,
+  PrepareFieldsQueryOptions,
+  SchemaOrDto,
+} from './prepare-fields-query.types';
+import type { FieldSchema } from './types/schema.types';
 
 /**
  * Parses `query.fields`, validates it against a schema or DTO and merges needed includes.

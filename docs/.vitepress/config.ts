@@ -34,7 +34,10 @@ const sidebar = [
       { text: 'Query Service', link: '/api/query-service' },
       { text: 'DTOs and Pagination', link: '/api/dtos-pagination' },
       { text: 'CASL', link: '/api/casl' },
-      { text: 'Decorators, Pipes, Utilities', link: '/api/decorators-pipes-utils' },
+      { text: 'OpenAPI Decorators', link: '/api/openapi' },
+      { text: 'Decorators', link: '/api/decorators/' },
+      { text: 'Pipes', link: '/api/pipes/' },
+      { text: 'Object Utilities', link: '/api/object-utils' },
     ],
   },
   {

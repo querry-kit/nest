@@ -11,7 +11,7 @@ export { FieldsExceptionFilter } from './filters/exception.filter';
 export { prepareFieldsQuery, resolveFieldSchema } from './prepare-fields-query';
 
 export type { ApiFieldsQueryOptions } from './api-fields-query.decorator';
-export type { PrepareFieldsQueryOptions, PreparedFieldsQuery, SchemaOrDto } from './prepare-fields-query';
+export type { PrepareFieldsQueryOptions, PreparedFieldsQuery, SchemaOrDto } from './prepare-fields-query.types';
 export type {
   FieldSchema,
   FieldSchemaNode,

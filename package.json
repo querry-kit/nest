@@ -75,10 +75,10 @@
       "default": "./dist/casl.js"
     },
     "./swagger": {
-      "types": "./dist/swagger.d.ts",
-      "import": "./dist/swagger.js",
-      "require": "./dist/swagger.cjs",
-      "default": "./dist/swagger.js"
+      "types": "./dist/decorators.d.ts",
+      "import": "./dist/decorators.js",
+      "require": "./dist/decorators.cjs",
+      "default": "./dist/decorators.js"
     },
     "./decorators": {
       "types": "./dist/decorators.d.ts",

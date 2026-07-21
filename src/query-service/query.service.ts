@@ -1,42 +1,11 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import type { BaseDelegate, BaseDelegateTypeMap, Delegate, QueryOptionsMap } from '../dto/index.js';
 import { PageMetaDTO } from '../pagination/page-meta.dto.js';
-import { serializeDecimalValues } from '../prisma-utils/decimal.js';
-import { parseQueryObject } from '../prisma-utils/object.js';
-
-/**
- * Resolves an access-control where clause for a subject.
- *
- * The returned value is merged with caller-provided filters as
- * `{ AND: [accessibleWhere, parsedWhere] }`.
- *
- * @param ability Application ability object.
- * @param subject Subject configured on the query service.
- * @returns Prisma-compatible where input limiting accessible records.
- */
-export type AccessibleWhereResolver<TAbility = unknown, TSubject = unknown> = (
-  ability: TAbility,
-  subject: TSubject,
-) => unknown;
-
-/**
- * Options accepted by {@link QueryService}.
- */
-export type QueryServiceOptions<TAbility = unknown, TSubject = unknown> = {
-  /** Subject passed to `accessibleWhere`, for example a CASL Prisma subject name. */
-  subject?: TSubject;
-  /** Optional resolver returning a Prisma-compatible access-control where input. */
-  accessibleWhere?: AccessibleWhereResolver<TAbility, TSubject>;
-  /** Optional logger for unexpected delegate errors before they are masked as 500 responses. */
-  errorLogger?: Pick<Console, 'error'>;
-};
+import { serializeDecimalValues } from '../util/object/decimal.js';
+import { parseQueryObject } from '../util/query/parse-query-object.js';
+import { handleQueryServiceError } from './errors/handle-query-service-error.js';
+import { isForbiddenLike } from './errors/is-forbidden-like.js';
+import type { QueryServiceOptions } from './query-service.types.js';
 
 /**
  * Generic query service for Prisma-compatible delegates.
@@ -273,35 +242,6 @@ export class QueryService<
    * @throws Converted Nest HTTP exception.
    */
   protected handleError(error: unknown, options?: unknown, args?: unknown): never {
-    if (isValidationErrorLike(error)) {
-      throw new BadRequestException({ message: 'Invalid query.', options, parsedArgs: args });
-    }
-
-    if (isKnownRequestErrorLike(error)) {
-      throw new BadRequestException({
-        message: error.message.split('\n\n\n')[1] ?? 'Invalid data',
-        code: error.code,
-        data: error.meta,
-      });
-    }
-
-    if (error instanceof HttpException) {
-      throw error;
-    }
-
-    this.serviceOptions.errorLogger?.error(error);
-    throw new InternalServerErrorException();
+    handleQueryServiceError(error, options, args, this.serviceOptions.errorLogger);
   }
-}
-
-function isValidationErrorLike(error: unknown): boolean {
-  return error instanceof Error && error.name === 'PrismaClientValidationError';
-}
-
-function isKnownRequestErrorLike(error: unknown): error is Error & { code: string; meta?: unknown } {
-  return error instanceof Error && typeof (error as { code?: unknown }).code === 'string';
-}
-
-function isForbiddenLike(error: unknown): boolean {
-  return error instanceof Error && (error.name === 'ForbiddenError' || error.name === 'ForbiddenErrorType');
 }

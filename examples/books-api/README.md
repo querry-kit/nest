@@ -7,7 +7,7 @@ Small in-memory NestJS API showing the consolidated `@querry-kit/nest` flow:
 - paginated envelope projection such as `fields=items{id,title},meta{page,itemCount}`.
 - `QueryService` with an authorization-aware `accessibleWhere` resolver.
 - `CheckPolicies`, `PoliciesGuard`, `ApiResourceQuery`, `ApiPaginatedResponse`, `ApiErrorResponses`, and `ApiParamId`.
-- `QueryTransformPipe` and Swagger documentation.
+- `QueryTransformPipe` and OpenAPI documentation.
 
 ## Run
 

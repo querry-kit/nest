@@ -35,7 +35,7 @@ features:
     linkText: Learn fields
   - title: NestJS utilities
     icon: 🧰
-    details: Share Swagger decorators, pipes, pagination DTOs, validation helpers, and object parsing helpers from one import.
-    link: /api/decorators-pipes-utils
+    details: Share OpenAPI decorators, pipes, pagination DTOs, validation helpers, and object parsing helpers from one import.
+    link: /api/openapi
     linkText: Browse utilities
 ---

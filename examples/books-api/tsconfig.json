@@ -13,8 +13,7 @@
       "@querry-kit/nest/object": ["../../src/util/object/index.ts"],
       "@querry-kit/nest/pagination": ["../../src/pagination/index.ts"],
       "@querry-kit/nest/pipes": ["../../src/pipes/index.ts"],
-      "@querry-kit/nest/query-service": ["../../src/query-service/index.ts"],
-      "@querry-kit/nest/swagger": ["../../src/swagger/index.ts"]
+      "@querry-kit/nest/query-service": ["../../src/query-service/index.ts"]
     }
   },
   "include": ["src/**/*.ts"]

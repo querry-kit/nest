@@ -24,15 +24,15 @@ import { createCaslAccessibleWhere } from '@querry-kit/nest/casl';
 
 ## Main Areas
 
-| Area | Use for |
-| ---- | ------- |
-| `ResourceQuery` | Common controller read flows with fields, includes, service calls, DTO mapping, and projection. |
-| `Fields` | Low-level parsing, validation, include generation, and response projection. |
-| `QueryService` | Prisma-compatible read operations, pagination, query normalization, and error mapping. |
-| DTOs and pagination | Controller query DTOs and `PaginatedDTO` response wrappers. |
-| CASL | Optional `accessibleBy` integration and policy guard helpers. |
-| Decorators and pipes | Swagger helpers for query parameters and responses, query transformation, body normalization, and reusable API metadata. |
-| Object utilities | Query object parsing, object diffing, Decimal serialization, and predicates. |
+| Area                 | Use for                                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `ResourceQuery`      | Common controller read flows with fields, includes, service calls, DTO mapping, and projection.                          |
+| `Fields`             | Low-level parsing, validation, include generation, and response projection.                                              |
+| `QueryService`       | Prisma-compatible read operations, pagination, query normalization, and error mapping.                                   |
+| DTOs and pagination  | Controller query DTOs and `PaginatedDTO` response wrappers.                                                              |
+| CASL                 | Optional `accessibleBy` integration and policy guard helpers.                                                            |
+| Decorators and pipes | OpenAPI helpers for query parameters and responses, query transformation, body normalization, and reusable API metadata. |
+| Object utilities     | Query object parsing, object diffing, Decimal serialization, and predicates.                                             |
 
 ## Subpath Exports
 
@@ -42,8 +42,7 @@ import { QueryDTO } from '@querry-kit/nest/dto';
 import { PageMetaDTO } from '@querry-kit/nest/pagination';
 import { QueryService } from '@querry-kit/nest/query-service';
 import { createCaslAccessibleWhere } from '@querry-kit/nest/casl';
-import { ApiPaginatedResponse } from '@querry-kit/nest/swagger';
-import { ApiParamId } from '@querry-kit/nest/decorators';
+import { ApiPaginatedResponse, ApiParamId } from '@querry-kit/nest/decorators';
 import { QueryTransformPipe } from '@querry-kit/nest/pipes';
 import { parseObject } from '@querry-kit/nest/object';
 ```
@@ -55,4 +54,7 @@ import { parseObject } from '@querry-kit/nest/object';
 - [Query Service](/api/query-service) and [complex direct QueryService examples](/api/query-service#complex-queries-without-resourcequery)
 - [DTOs and Pagination](/api/dtos-pagination)
 - [CASL](/api/casl)
-- [Decorators, Pipes, Utilities](/api/decorators-pipes-utils)
+- [OpenAPI Decorators](/api/openapi)
+- [Decorators](/api/decorators/)
+- [Pipes](/api/pipes/)
+- [Object Utilities](/api/object-utils)

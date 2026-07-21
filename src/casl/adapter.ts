@@ -1,6 +1,6 @@
 import type { AnyAbility } from '@casl/ability';
 import { accessibleBy } from '@casl/prisma';
-import type { AccessibleWhereResolver } from '../query-service/query.service.js';
+import type { AccessibleWhereResolver } from '../query-service/query-service.types.js';
 
 /**
  * Options for {@link createCaslAccessibleWhere}.

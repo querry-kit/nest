@@ -1,71 +1,57 @@
-const mockApplyDecorators = jest.fn((...decorators) => decorators);
-const mockApiOkResponse = jest.fn((options) => ({
-  type: 'ok',
-  value: options,
-}));
-const mockGetSchemaPath = jest.fn((model) => `#/components/schemas/${model?.name ?? 'Unknown'}`);
+import 'reflect-metadata';
 
-jest.mock('@nestjs/common', () => {
-  const actual = jest.requireActual('@nestjs/common');
-  return {
-    ...actual,
-    applyDecorators: mockApplyDecorators,
-  };
-});
+const mockApiExtraModels = jest.fn(() => jest.fn());
+const mockApiOkResponse = jest.fn(() => jest.fn());
+const mockApiProperty = jest.fn(() => jest.fn());
+const mockApiPropertyOptional = jest.fn(() => jest.fn());
+const mockGetSchemaPath = jest.fn((model: { name: string }) => `#/components/schemas/${model.name}`);
 
 jest.mock('@nestjs/swagger', () => ({
+  ApiExtraModels: mockApiExtraModels,
   ApiOkResponse: mockApiOkResponse,
+  ApiProperty: mockApiProperty,
+  ApiPropertyOptional: mockApiPropertyOptional,
   getSchemaPath: mockGetSchemaPath,
-  ApiProperty: () => () => undefined,
 }));
 
-import { ApiPaginatedResponse } from './api-paginated-response.decorator';
+import { PageMetaDTO, PaginatedDTO } from '../../pagination/index.js';
+import { ApiPaginatedResponse } from './api-paginated-response.decorator.js';
 
-class DemoDTO {}
+class BookDTO {}
 
-describe('ApiPaginatedResponse decorator', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+describe('ApiPaginatedResponse', () => {
+  it('creates a Swagger schema for paginated model responses', () => {
+    const decorator = ApiPaginatedResponse({ model: BookDTO, description: 'Books' });
 
-  it('uses default description and schema paths', () => {
-    const result = ApiPaginatedResponse({ model: DemoDTO });
-
-    expect(mockGetSchemaPath).toHaveBeenCalledWith(DemoDTO);
-    expect(mockGetSchemaPath).toHaveBeenCalledTimes(1);
+    expect(typeof decorator).toBe('function');
+    expect(mockApiExtraModels).toHaveBeenCalledWith(PaginatedDTO, PageMetaDTO, BookDTO);
     expect(mockApiOkResponse).toHaveBeenCalledWith(
       expect.objectContaining({
-        description: 'Paginated items',
-        schema: expect.objectContaining({
-          properties: expect.objectContaining({
-            items: expect.objectContaining({
-              type: 'array',
-              items: { $ref: '#/components/schemas/DemoDTO' },
-            }),
-            meta: expect.objectContaining({
-              properties: expect.objectContaining({
-                page: expect.objectContaining({ type: 'number' }),
-                perPage: expect.objectContaining({ type: 'number' }),
-                itemCount: expect.objectContaining({ type: 'number' }),
-                pageCount: expect.objectContaining({ type: 'number' }),
-                hasPrevPage: expect.objectContaining({ type: 'boolean' }),
-                hasNextPage: expect.objectContaining({ type: 'boolean' }),
-              }),
-            }),
-          }),
-        }),
+        description: 'Books',
+        schema: {
+          allOf: [
+            { $ref: '#/components/schemas/PaginatedDTO' },
+            {
+              properties: {
+                items: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/BookDTO' },
+                },
+                meta: { $ref: '#/components/schemas/PageMetaDTO' },
+              },
+            },
+          ],
+        },
       }),
     );
-    expect(mockApplyDecorators).toHaveBeenCalledTimes(1);
-    expect(Array.isArray(result)).toBe(true);
   });
 
-  it('respects custom description', () => {
-    ApiPaginatedResponse({ model: DemoDTO, description: 'Custom description' });
+  it('uses the default response description', () => {
+    ApiPaginatedResponse({ model: BookDTO });
 
-    expect(mockApiOkResponse).toHaveBeenCalledWith(
+    expect(mockApiOkResponse).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        description: 'Custom description',
+        description: 'Paginated items',
       }),
     );
   });

@@ -1,72 +1,43 @@
 import { applyDecorators, type Type } from '@nestjs/common';
-import type { ApiResponseExamples, OpenAPIObject } from '@nestjs/swagger';
-import { ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOkResponse, getSchemaPath, type ApiResponseOptions } from '@nestjs/swagger';
+import { PageMetaDTO } from '../../pagination/page-meta.dto.js';
+import { PaginatedDTO } from '../../pagination/paginated.dto.js';
 
-type LinksObject = NonNullable<NonNullable<OpenAPIObject['components']>['links']>;
-
-export type ApiPaginatedResponseOptions<T> = {
-  /** DTO class used for each item in the paginated `items` array. */
+/**
+ * Options for {@link ApiPaginatedResponse}.
+ */
+export type ApiPaginatedResponseOptions<T> = Omit<ApiResponseOptions, 'schema' | 'type'> & {
+  /** DTO class used as the item schema inside the paginated `items` array. */
   model: Type<T>;
-  /** Optional response description. Defaults to `Paginated items`. */
-  description?: string;
-  /** Optional OpenAPI links included in the response metadata. */
-  links?: LinksObject;
-  /** Optional single response example. */
-  example?: unknown;
-  /** Optional named response examples. */
-  examples?: {
-    [key: string]: ApiResponseExamples;
-  };
 };
 
 /**
- * Adds a paginated item response schema to the Swagger operation.
+ * Adds a paginated response schema to a Swagger operation.
  *
- * @param {ApiPaginatedResponseOptions<TModel>} options The response model and optional response metadata.
- * @returns {MethodDecorator & ClassDecorator} The composed Swagger response decorator.
+ * @param options Response options.
+ * @returns Composed Swagger decorator.
  */
 export function ApiPaginatedResponse<TModel>(
   options: ApiPaginatedResponseOptions<TModel>,
 ): MethodDecorator & ClassDecorator {
   return applyDecorators(
+    ApiExtraModels(PaginatedDTO, PageMetaDTO, options.model),
     ApiOkResponse({
       ...options,
       description: options.description ?? 'Paginated items',
-
       schema: {
-        type: 'object',
-        properties: {
-          items: {
-            type: 'array',
-            items: { $ref: getSchemaPath(options.model) },
-          },
-          meta: {
-            type: 'object',
+        allOf: [
+          { $ref: getSchemaPath(PaginatedDTO) },
+          {
             properties: {
-              page: { type: 'number', description: 'Current page number' },
-              perPage: {
-                type: 'number',
-                description: 'Number of items per page',
+              items: {
+                type: 'array',
+                items: { $ref: getSchemaPath(options.model) },
               },
-              itemCount: {
-                type: 'number',
-                description: 'Total number of items',
-              },
-              pageCount: {
-                type: 'number',
-                description: 'Total number of pages',
-              },
-              hasPrevPage: {
-                type: 'boolean',
-                description: 'Indicates if there is a previous page',
-              },
-              hasNextPage: {
-                type: 'boolean',
-                description: 'Indicates if there is a next page',
-              },
+              meta: { $ref: getSchemaPath(PageMetaDTO) },
             },
           },
-        },
+        ],
       },
     }),
   );

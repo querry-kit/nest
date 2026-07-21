@@ -9,7 +9,6 @@ export default defineConfig({
     pagination: 'src/pagination/index.ts',
     'query-service': 'src/query-service/index.ts',
     casl: 'src/casl/index.ts',
-    swagger: 'src/swagger/index.ts',
     decorators: 'src/decorators/index.ts',
     pipes: 'src/pipes/index.ts',
   },

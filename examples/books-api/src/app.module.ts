@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { BooksController } from './books.controller.js';
-import { BooksService, type DemoAbility } from './books.service.js';
+import { BooksController } from './books/books.controller.js';
+import { BooksService, type DemoAbility } from './books/books.service.js';
 
 @Module({
   controllers: [BooksController],

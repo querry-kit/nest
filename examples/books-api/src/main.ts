@@ -11,7 +11,7 @@ async function bootstrap(): Promise<void> {
   const config = new DocumentBuilder()
     .setTitle('Query Kit Nest Books API')
     .setDescription(
-      'In-memory example for @querry-kit/nest resource queries, fields projection, CASL policies, and Swagger helpers.',
+      'In-memory example for @querry-kit/nest resource queries, fields projection, CASL policies, and OpenAPI helpers.',
     )
     .setVersion('1.0.0')
     .build();

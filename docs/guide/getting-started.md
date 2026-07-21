@@ -9,7 +9,7 @@ description: 'Install and use @querry-kit/nest.'
 - fields parsing, validation, Prisma include generation, and response projection.
 - Prisma-compatible `QueryService` helpers with pagination DTOs.
 - optional CASL integration for authorization-aware read queries.
-- Swagger decorators, query/body pipes, validation helpers, and object utilities.
+- OpenAPI decorators, query/body pipes, validation helpers, and object utilities.
 
 ## Installation
 

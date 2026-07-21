@@ -22,9 +22,9 @@ app.useGlobalPipes(
 The supported pagination range is:
 
 ```ts
-page >= 1
-perPage >= 1
-perPage <= 1000
+page >= 1;
+perPage >= 1;
+perPage <= 1000;
 ```
 
 ## Query DTOs
@@ -43,7 +43,7 @@ QueryDTO<ProjectTypeMap>;
 
 `QueryDTO` and `FindByIdDTO` expose `fields?: string`. `ResourceQuery` and `prepareFieldsQuery` use that optional value to build relation includes and project responses.
 
-`QueryDTO` also exposes the Prisma-style query inputs used by resource list endpoints: `select`, `include`, `where`, `orderBy`, `cursor`, and `distinct`, plus `page` and `perPage` from `PageOptionsDTO`. Use `ApiResourceQuery()` to document the public query parameter contract in Swagger.
+`QueryDTO` also exposes the Prisma-style query inputs used by resource list endpoints: `select`, `include`, `where`, `orderBy`, `cursor`, and `distinct`, plus `page` and `perPage` from `PageOptionsDTO`. Use `ApiResourceQuery()` to document the public query parameter contract in OpenAPI metadata.
 
 ## Service Shape
 
