@@ -40,6 +40,23 @@ Pass the current ability when calling protected read methods:
 const result = await this.projectsService.query(query, req.ability);
 ```
 
+CASL is optional at the controller layer too. `ResourceQuery.query` and `ResourceQuery.findById` accept `ability`, but they do not require it.
+
+When an ability-aware DTO mapper or response policy needs relations, set them as endpoint-required includes:
+
+```ts
+return ResourceQuery.query({
+  service: this.projectsService,
+  query,
+  schema: ProjectDTO,
+  ability: req.ability,
+  include: { members: true },
+  map: (project, ability) => ProjectDTO.fromModel(project, ability),
+});
+```
+
+Client `include` parameters extend those required includes, and `fields` adds any relation includes needed for projection.
+
 When `query` receives both an ability and caller filters, `QueryService` merges them with `AND` so the access rule stays mandatory.
 
 ```ts

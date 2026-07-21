@@ -78,7 +78,11 @@ export class QueryService<
       distinct: parseQueryObject(options.distinct),
     };
 
-    return (await this.table.findFirst(args)) as T | null;
+    try {
+      return (await this.table.findFirst(args)) as T | null;
+    } catch (error) {
+      this.handleError(error, options, args);
+    }
   }
 
   /**
@@ -103,7 +107,11 @@ export class QueryService<
       distinct: parseQueryObject(options.distinct),
     };
 
-    return (await this.table.findMany(args)) as T[];
+    try {
+      return (await this.table.findMany(args)) as T[];
+    } catch (error) {
+      this.handleError(error, options, args);
+    }
   }
 
   /**
@@ -153,18 +161,22 @@ export class QueryService<
       include: parseQueryObject(options.include),
     };
 
-    const item = ability
-      ? await this.table.findFirst({
-          ...args,
-          where: this.mergeAbilityWhere(options.where, ability),
-        } as Parameters<DelegateType['findFirst']>[0])
-      : await this.table.findUnique(args as Parameters<DelegateType['findUnique']>[0]);
+    try {
+      const item = ability
+        ? await this.table.findFirst({
+            ...args,
+            where: this.mergeAbilityWhere(options.where, ability),
+          } as Parameters<DelegateType['findFirst']>[0])
+        : await this.table.findUnique(args as Parameters<DelegateType['findUnique']>[0]);
 
-    if (!item) {
-      throw new NotFoundException('Item not found.');
+      if (!item) {
+        throw new NotFoundException('Item not found.');
+      }
+
+      return item as T;
+    } catch (error) {
+      this.handleError(error, options, args);
     }
-
-    return item as T;
   }
 
   /**

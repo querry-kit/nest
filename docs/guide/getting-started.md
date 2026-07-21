@@ -52,29 +52,43 @@ export class CustomersService extends QueryService<typeof PrismaService.prototyp
 
 ## Resource Controller
 
-Use `ResourceQuery.query` when the endpoint follows the common pattern: parse `fields`, merge generated includes, call the service, map models to DTOs, and project the response.
+Use `ResourceQuery.query` when the endpoint follows the common pattern: parse optional `fields`, merge endpoint-required includes with client includes, call the service, map models to DTOs, and project the response.
 
 ```ts
 import { Controller, Get, Query, Req } from '@nestjs/common';
-import { ApiPaginatedResponse, QueryDTO, ResourceQuery } from '@querry-kit/nest';
+import { ApiErrorResponses, ApiPaginatedResponse, ApiResourceQuery, QueryDTO, ResourceQuery } from '@querry-kit/nest';
 
 @Controller('customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Get()
+  @ApiResourceQuery()
   @ApiPaginatedResponse({ model: CustomerDTO })
+  @ApiErrorResponses({ badRequestDescription: 'Invalid query parameter.' })
   async query(@Req() req: AuthRequest, @Query() query: QueryDTO<CustomerTypeMap>) {
     return ResourceQuery.query({
       service: this.customersService,
       query,
       schema: CustomerDTO,
       ability: req.ability,
+      include: { organization: true },
       map: (customer, ability) => CustomerDTO.fromModel(customer, ability),
     });
   }
 }
 ```
+
+`ApiResourceQuery()` documents `fields`, `page`, `perPage`, `select`, `include`, `where`, `orderBy`, and `distinct`. `ResourceQuery.query` keeps `fields` optional; when it is present, unknown DTO fields return HTTP 400 before the service runs. Invalid Prisma `select` or `include` values should be reported by the service layer as HTTP 400.
+
+Paginated responses support item shorthand and envelope projection:
+
+```http
+GET /customers?fields=id,name
+GET /customers?fields=items{id,name},meta{page,perPage,itemCount,pageCount}
+```
+
+The `ability` option is optional. Omit it when an endpoint does not use CASL. The `include` option is for relations required by the endpoint or ability-aware mapper; client `include` parameters extend it.
 
 For detail endpoints, use `ResourceQuery.findById` with the same schema and mapper:
 

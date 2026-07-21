@@ -43,6 +43,74 @@ describe('ResourceQuery', () => {
     expect(result.meta.itemCount).toBe(1);
   });
 
+  it('projects paginated response envelopes including page metadata', async () => {
+    const service = {
+      query: jest.fn().mockResolvedValue({
+        items: [{ id: '1', name: 'Ada', profile: { id: 'p1', email: 'ada@example.test' } }],
+        pageMeta: new PageMetaDTO({ itemCount: 12, pageOptions: { page: 2, perPage: 10 } }),
+      }),
+      findById: jest.fn(),
+    };
+
+    const result = await ResourceQuery.query({
+      service,
+      query: { fields: 'items{id,profile{id}},meta{page,perPage,itemCount,pageCount}' },
+      schema,
+      include: { profile: { where: { active: 'true' } } },
+      map: (item: { id: string; name: string; profile: { id: string; email: string } }) => ({
+        id: item.id,
+        name: item.name,
+        profile: item.profile,
+      }),
+    });
+
+    expect(service.query).toHaveBeenCalledWith(
+      {
+        fields: 'items{id,profile{id}},meta{page,perPage,itemCount,pageCount}',
+        include: { profile: { where: { active: true } } },
+      },
+      undefined,
+    );
+    expect(result).toEqual({
+      items: [{ id: '1', profile: { id: 'p1' } }],
+      meta: { page: 2, perPage: 10, itemCount: 12, pageCount: 2 },
+    });
+  });
+
+  it('merges endpoint includes with client includes when fields are omitted', async () => {
+    const service = {
+      query: jest.fn().mockResolvedValue({
+        items: [{ id: '1', name: 'Ada', profile: { id: 'p1', email: 'ada@example.test' } }],
+        pageMeta: new PageMetaDTO({ itemCount: 1, pageOptions: { page: 1, perPage: 10 } }),
+      }),
+      findById: jest.fn(),
+    };
+
+    await ResourceQuery.query({
+      service,
+      query: { include: { profile: { include: { avatar: true } } } },
+      schema,
+      include: { profile: { where: { active: 'true' } } },
+      map: (item: { id: string; name: string; profile: { id: string; email: string } }) => ({
+        id: item.id,
+        name: item.name,
+        profile: item.profile,
+      }),
+    });
+
+    expect(service.query).toHaveBeenCalledWith(
+      {
+        include: {
+          profile: {
+            where: { active: true },
+            include: { avatar: true },
+          },
+        },
+      },
+      undefined,
+    );
+  });
+
   it('prepares fields, calls findById with ability and projects detail responses', async () => {
     const service = {
       query: jest.fn(),

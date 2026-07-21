@@ -137,19 +137,25 @@ For example, this request asks for author data through `fields`. `prepareFieldsQ
 GET /books?fields=id,title,author{id,name}&where.published=true&orderBy={"title":"asc"}
 ```
 
-Existing includes are preserved. This is useful when the endpoint needs relations for its mapper even when the client does not request those relation fields.
+Existing includes are preserved. Use `baseInclude` when the endpoint, CASL-aware mapper, or response policy needs relations even when the client does not request those relation fields. Client `include` values extend that base include.
 
 ```ts
 const prepared = prepareFieldsQuery(
+  query,
+  BookDTO,
   {
-    ...query,
-    include: {
+    baseInclude: {
       author: { select: { id: true, name: true } },
       tags: true,
     },
   },
-  BookDTO,
 );
+```
+
+When `fields` is omitted, `prepareFieldsQuery` still returns a query copy with merged endpoint and client includes. Paginated `ResourceQuery.query` endpoints additionally support projecting the response envelope:
+
+```http
+GET /books?fields=items{id,title},meta{page,perPage,itemCount,pageCount}
 ```
 
 ### Detail Queries

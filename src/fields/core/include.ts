@@ -4,6 +4,28 @@ import { FieldSchema, FieldsProjection } from '../types/schema.types';
 import { isRelationSchemaNode } from './schema';
 
 /**
+ * Merges Prisma-style include values while normalizing query-string objects.
+ *
+ * @param {unknown} base Include configuration required by the endpoint.
+ * @param {unknown} extension Include configuration supplied by the caller.
+ * @returns {unknown} The merged include configuration.
+ */
+export function mergeInclude(base?: unknown, extension?: unknown): unknown {
+  const parsedBase = normalizeInclude(base);
+  const parsedExtension = normalizeInclude(extension);
+
+  if (!parsedBase) {
+    return parsedExtension;
+  }
+
+  if (!parsedExtension) {
+    return parsedBase;
+  }
+
+  return mergeIncludeObjects(parsedBase, parsedExtension);
+}
+
+/**
  * Builds a Prisma-compatible include object from a validated projection.
  *
  * @param {FieldsProjection} projection The parsed fields projection.
@@ -72,4 +94,35 @@ export function buildFieldsInclude(
   }
 
   return result;
+}
+
+function normalizeInclude(include?: unknown): Record<string, unknown> | undefined {
+  const parsed = parseObject(include);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return undefined;
+  }
+
+  return parsed as Record<string, unknown>;
+}
+
+function mergeIncludeObjects(
+  base: Record<string, unknown>,
+  extension: Record<string, unknown>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = { ...base };
+
+  for (const [key, value] of Object.entries(extension)) {
+    const current = result[key];
+    if (isPlainIncludeObject(current) && isPlainIncludeObject(value)) {
+      result[key] = mergeIncludeObjects(current, value);
+    } else {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+function isPlainIncludeObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }

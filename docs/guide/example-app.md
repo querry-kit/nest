@@ -10,10 +10,11 @@ The repository includes a small in-memory NestJS app under `examples/books-api`.
 
 - `ResourceQuery.query` for paginated list endpoints.
 - `ResourceQuery.findById` for detail endpoints.
-- DTO-backed `fields` validation and projection.
+- DTO-backed optional `fields` validation and projection on every controller route.
+- paginated envelope projection for `items` and `meta`.
 - generated includes for `author`, nested `author.books`, and `tags`.
 - `QueryService` with an authorization-aware `accessibleWhere` resolver.
-- `CheckPolicies`, `PoliciesGuard`, `ApiPaginatedResponse`, `ApiErrorResponses`, and `ApiParamId`.
+- `CheckPolicies`, `PoliciesGuard`, `ApiResourceQuery`, `ApiPaginatedResponse`, `ApiErrorResponses`, and `ApiParamId`.
 - `QueryTransformPipe`, `FieldsExceptionFilter`, and Swagger setup.
 - a complete CRUD controller with `GET`, `POST`, `PATCH`, and `DELETE`.
 
@@ -51,6 +52,12 @@ Find one book and request nested author books:
 curl -g 'http://localhost:3000/books/book-1?fields=id,title,author{name,books{title}}'
 ```
 
+Project a paginated response envelope:
+
+```sh
+curl -g 'http://localhost:3000/books?fields=items{id,title},meta{page,perPage,itemCount,pageCount}'
+```
+
 Create a book:
 
 ```http
@@ -68,7 +75,7 @@ Content-Type: application/json
 Delete a book:
 
 ```http
-DELETE /books/book-2
+DELETE /books/book-2?fields=id,title
 ```
 
 Update a book:
@@ -82,6 +89,8 @@ Content-Type: application/json
   "tagIds": ["tag-prisma", "tag-api"]
 }
 ```
+
+Every route accepts `fields`. Unknown DTO fields return HTTP 400 during fields validation. Invalid `select` and `include` keys return HTTP 400 in the demo delegate, matching the error surface a Prisma-backed `QueryService` exposes.
 
 ## Source Layout
 

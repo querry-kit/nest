@@ -1,12 +1,16 @@
+import { BadRequestException } from '@nestjs/common';
 import type { BookModel } from './book.dto.js';
 
 type FindArgs = {
   where?: BookWhereInput;
+  select?: BookSelect;
   include?: BookInclude;
   take?: number;
   skip?: number;
   orderBy?: Partial<Record<keyof BookModel, 'asc' | 'desc'>>;
 };
+
+export type BookSelect = Partial<Record<keyof BookModel, boolean>>;
 
 export type BookInclude = {
   author?: boolean | { include?: { books?: boolean } };
@@ -59,17 +63,20 @@ const tagRows = [
 ];
 
 export class BookDelegate {
-  async create(args: { data: Omit<BookModel, 'id' | 'published'> }): Promise<BookModel> {
+  async create(args: { data: Omit<BookModel, 'id' | 'published'>; include?: BookInclude }): Promise<BookModel> {
+    this.validateInclude(args.include);
     const item: BookModel = {
       id: `book-${bookRows.length + 1}`,
       published: true,
       ...args.data,
     };
     bookRows.push(item);
-    return item;
+    return this.include(item, args.include);
   }
 
   async findMany(args: FindArgs = {}): Promise<BookModel[]> {
+    this.validateSelect(args.select);
+    this.validateInclude(args.include);
     const filtered = this.sort(this.filter(args.where), args.orderBy);
     return filtered
       .slice(args.skip ?? 0, (args.skip ?? 0) + (args.take ?? filtered.length))
@@ -85,6 +92,7 @@ export class BookDelegate {
     data?: Partial<BookModel>;
     include?: BookInclude;
   }): Promise<BookModel | null> {
+    this.validateInclude(args.include);
     const book = bookRows.find((row) => row.id === args.where?.id);
     if (!book) {
       return null;
@@ -101,19 +109,26 @@ export class BookDelegate {
     return args;
   }
 
-  async delete(args: { where?: { id?: string } }): Promise<BookModel | null> {
+  async delete(args: { where?: { id?: string }; include?: BookInclude }): Promise<BookModel | null> {
+    this.validateInclude(args.include);
     const index = bookRows.findIndex((book) => book.id === args.where?.id);
     if (index === -1) {
       return null;
     }
-    return bookRows.splice(index, 1)[0];
+    return this.include(bookRows.splice(index, 1)[0], args.include);
   }
 
   async findFirst(args: FindArgs = {}): Promise<BookModel | null> {
+    this.validateSelect(args.select);
+    this.validateInclude(args.include);
     return this.filter(args.where).map((book) => this.include(book, args.include))[0] ?? null;
   }
 
-  async findUnique(args: { where?: { id?: string }; include?: BookInclude } = {}): Promise<BookModel | null> {
+  async findUnique(
+    args: { where?: { id?: string }; select?: BookSelect; include?: BookInclude } = {},
+  ): Promise<BookModel | null> {
+    this.validateSelect(args.select);
+    this.validateInclude(args.include);
     const book = bookRows.find((row) => row.id === args.where?.id);
     return book ? this.include(book, args.include) : null;
   }
@@ -160,6 +175,40 @@ export class BookDelegate {
       ...(include?.author ? { author: this.buildAuthor(book.authorId, include.author) } : {}),
       ...(include?.tags ? { tags: tagRows.filter((tag) => book.tagIds.includes(tag.id)) } : {}),
     };
+  }
+
+  private validateSelect(select?: BookSelect): void {
+    if (!select) {
+      return;
+    }
+
+    for (const key of Object.keys(select)) {
+      if (!['id', 'title', 'isbn', 'published', 'authorId', 'tagIds', 'author', 'tags'].includes(key)) {
+        throw new BadRequestException(`Invalid select field "${key}".`);
+      }
+    }
+  }
+
+  private validateInclude(include?: BookInclude): void {
+    if (!include) {
+      return;
+    }
+
+    for (const key of Object.keys(include)) {
+      if (!['author', 'tags'].includes(key)) {
+        throw new BadRequestException(`Invalid include field "${key}".`);
+      }
+    }
+
+    const author = include.author;
+    if (author && typeof author === 'object') {
+      const authorInclude = author.include;
+      for (const key of Object.keys(authorInclude ?? {})) {
+        if (key !== 'books') {
+          throw new BadRequestException(`Invalid include field "author.${key}".`);
+        }
+      }
+    }
   }
 
   private buildAuthor(authorId: string, include: NonNullable<BookInclude['author']>) {

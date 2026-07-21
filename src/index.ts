@@ -25,7 +25,7 @@ export { EmptyStringToNullPipe, QueryTransformPipe } from './pipes/index';
 export { parseQueryObject } from './prisma-utils/index';
 export { QueryService } from './query-service/index';
 export { ResourceQuery } from './resource-query';
-export { ApiPaginatedResponse } from './swagger/index';
+export { ApiPaginatedResponse, ApiResourceQuery } from './swagger/index';
 export {
   ValidationUtil,
   createFromPath,
@@ -63,5 +63,5 @@ export type {
 } from './fields/index';
 export type { AccessibleWhereResolver, QueryServiceOptions } from './query-service/index';
 export type { ResourceFindByIdOptions, ResourceQueryOptions } from './resource-query';
-export type { ApiPaginatedResponseOptions } from './swagger/index';
+export type { ApiPaginatedResponseOptions, ApiResourceQueryOptions } from './swagger/index';
 export type { ValidationPropertyErrors } from './util/index';

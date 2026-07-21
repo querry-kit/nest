@@ -8,7 +8,7 @@ export { createRelationSchemaNode, relation } from './core/schema';
 export { FieldsValidator } from './core/validator';
 export { FieldsQuery } from './fields-query.decorator';
 export { FieldsExceptionFilter } from './filters/exception.filter';
-export { prepareFieldsQuery } from './prepare-fields-query';
+export { prepareFieldsQuery, resolveFieldSchema } from './prepare-fields-query';
 
 export type { ApiFieldsQueryOptions } from './api-fields-query.decorator';
 export type { PrepareFieldsQueryOptions, PreparedFieldsQuery, SchemaOrDto } from './prepare-fields-query';

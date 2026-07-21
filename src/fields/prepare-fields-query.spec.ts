@@ -38,6 +38,56 @@ describe('prepareFieldsQuery', () => {
     });
   });
 
+  it('merges endpoint includes and client includes when fields are omitted', () => {
+    const prepared = prepareFieldsQuery(
+      {
+        include: { profile: { include: { avatar: true } } },
+      },
+      schema,
+      {
+        baseInclude: { profile: { include: { settings: true } } },
+      },
+    );
+
+    expect(prepared.projection).toBeUndefined();
+    expect(prepared.query).toEqual({
+      include: {
+        profile: {
+          include: {
+            settings: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+  });
+
+  it('merges endpoint includes, client includes and fields-generated includes', () => {
+    const prepared = prepareFieldsQuery(
+      {
+        fields: 'profile{avatar{id}}',
+        include: { profile: { include: { settings: true } } },
+      },
+      schema,
+      {
+        baseInclude: { auditTrail: true },
+      },
+    );
+
+    expect(prepared.query).toEqual({
+      fields: 'profile{avatar{id}}',
+      include: {
+        auditTrail: true,
+        profile: {
+          include: {
+            settings: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+  });
+
   it('does not mutate the incoming query object', () => {
     const query = {
       fields: 'profile{id}',

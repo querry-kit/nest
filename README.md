@@ -18,13 +18,15 @@ pnpm add @casl/ability @casl/prisma
 
 ## Resource Queries
 
-`ResourceQuery` covers the common controller flow: parse `fields`, generate Prisma includes, call a `QueryService`, map models to DTOs, and project the response.
+`ResourceQuery` covers the common controller flow: parse optional `fields`, merge endpoint-required includes with client `include` values, generate Prisma includes for selected relations, call a `QueryService`, map models to DTOs, and project the response.
 
 ```ts
-import { ApiPaginatedResponse, QueryDTO, ResourceQuery } from '@querry-kit/nest';
+import { ApiErrorResponses, ApiPaginatedResponse, ApiResourceQuery, QueryDTO, ResourceQuery } from '@querry-kit/nest';
 
 @Get()
+@ApiResourceQuery()
 @ApiPaginatedResponse({ model: CustomerDTO })
+@ApiErrorResponses({ badRequestDescription: 'Invalid query parameter.' })
 async query(@Req() req: AuthRequest, @Query() query: QueryDTO<CustomerTypeMap>) {
   return ResourceQuery.query({
     service: this.customersService,
@@ -38,9 +40,18 @@ async query(@Req() req: AuthRequest, @Query() query: QueryDTO<CustomerTypeMap>) 
 
 Use `prepareFieldsQuery` directly when a controller needs custom service orchestration.
 
+Paginated endpoints support item shorthand and envelope projection:
+
+```txt
+GET /books?fields=id,title
+GET /books?fields=items{id,title},meta{page,perPage,itemCount,pageCount}
+```
+
+CASL is optional. Pass `ability` only when the endpoint should merge an authorization-aware `where` clause through `QueryService`; omit it for APIs that do not use CASL.
+
 ## Main APIs
 
-- `Fields`, `prepareFieldsQuery`, `FieldsQuery`, and `ApiFieldsQuery` for fields projection.
+- `Fields`, `prepareFieldsQuery`, `FieldsQuery`, `ApiFieldsQuery`, and `ApiResourceQuery` for fields projection and Swagger query documentation.
 - `QueryService`, `QueryDTO`, `FindByIdDTO`, and pagination DTOs for Prisma-style read endpoints.
 - `createCaslAccessibleWhere`, `CheckPolicies`, and `PoliciesGuard` for CASL integration.
 - `ApiPaginatedResponse`, `ApiErrorResponses`, ID/timestamp decorators, and reusable pipes.

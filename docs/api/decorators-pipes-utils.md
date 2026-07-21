@@ -9,7 +9,15 @@ This package includes the small NestJS utilities that were previously split into
 ## Swagger Decorators
 
 ```ts
-import { ApiErrorResponses, ApiPaginatedResponse, ApiParamId } from '@querry-kit/nest';
+import { ApiErrorResponses, ApiPaginatedResponse, ApiParamId, ApiResourceQuery } from '@querry-kit/nest';
+```
+
+`ApiResourceQuery()` documents the common list query parameters: `fields`, `page`, `perPage`, `select`, `include`, `where`, `orderBy`, and `distinct`. It also adds a 400 response for invalid fields syntax, unknown fields, invalid include/select, or invalid query values.
+
+```ts
+@ApiResourceQuery()
+@ApiPaginatedResponse({ model: UserDTO })
+findMany() {}
 ```
 
 `ApiPaginatedResponse({ model })` documents a `PaginatedDTO<T>` response with `items` and `meta` properties.

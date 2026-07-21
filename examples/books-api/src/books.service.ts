@@ -37,7 +37,7 @@ export class BooksService extends QueryService<
     this.delegate = delegate;
   }
 
-  async create(data: CreateBookDTO): Promise<BookModel> {
+  async create(data: CreateBookDTO, query: QueryOptionsMap<BookTypeMap>['findById'] = {}): Promise<BookModel> {
     return this.delegate.create({
       data: {
         title: data.title,
@@ -45,14 +45,19 @@ export class BooksService extends QueryService<
         authorId: data.authorId,
         tagIds: data.tagIds,
       },
+      include: query.include,
     });
   }
 
-  async update(id: string, data: UpdateBookDTO): Promise<BookModel> {
+  async update(
+    id: string,
+    data: UpdateBookDTO,
+    query: QueryOptionsMap<BookTypeMap>['findById'] = {},
+  ): Promise<BookModel> {
     const updated = await this.delegate.update({
       where: { id },
       data,
-      include: { author: true, tags: true },
+      include: query.include,
     });
     if (!updated) {
       throw new NotFoundException('Book not found.');
@@ -60,8 +65,8 @@ export class BooksService extends QueryService<
     return updated;
   }
 
-  async remove(id: string): Promise<BookModel> {
-    const deleted = await this.delegate.delete({ where: { id } });
+  async remove(id: string, query: QueryOptionsMap<BookTypeMap>['findById'] = {}): Promise<BookModel> {
+    const deleted = await this.delegate.delete({ where: { id }, include: query.include });
     if (!deleted) {
       throw new NotFoundException('Book not found.');
     }

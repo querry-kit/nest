@@ -10,6 +10,7 @@ description: 'API overview for @querry-kit/nest.'
 import {
   ApiErrorResponses,
   ApiPaginatedResponse,
+  ApiResourceQuery,
   Fields,
   QueryDTO,
   QueryService,
@@ -30,7 +31,7 @@ import { createCaslAccessibleWhere } from '@querry-kit/nest/casl';
 | `QueryService` | Prisma-compatible read operations, pagination, query normalization, and error mapping. |
 | DTOs and pagination | Controller query DTOs and `PaginatedDTO` response wrappers. |
 | CASL | Optional `accessibleBy` integration and policy guard helpers. |
-| Decorators and pipes | Swagger helpers, query transformation, body normalization, and reusable API metadata. |
+| Decorators and pipes | Swagger helpers for query parameters and responses, query transformation, body normalization, and reusable API metadata. |
 | Object utilities | Query object parsing, object diffing, Decimal serialization, and predicates. |
 
 ## Subpath Exports

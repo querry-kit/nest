@@ -41,7 +41,9 @@ CountDTO<ProjectTypeMap>;
 QueryDTO<ProjectTypeMap>;
 ```
 
-`QueryDTO` and `FindByIdDTO` expose `fields?: string`. `ResourceQuery` and `prepareFieldsQuery` use that value to build relation includes and project responses.
+`QueryDTO` and `FindByIdDTO` expose `fields?: string`. `ResourceQuery` and `prepareFieldsQuery` use that optional value to build relation includes and project responses.
+
+`QueryDTO` also exposes the Prisma-style query inputs used by resource list endpoints: `select`, `include`, `where`, `orderBy`, `cursor`, and `distinct`, plus `page` and `perPage` from `PageOptionsDTO`. Use `ApiResourceQuery()` to document the public query parameter contract in Swagger.
 
 ## Service Shape
 
@@ -61,3 +63,10 @@ return new PaginatedDTO(projectDtos, pageMeta);
 ```
 
 `PageMetaDTO` computes `pageCount`, `hasPrevPage`, and `hasNextPage` from `itemCount`, `page`, and `perPage`.
+
+`ResourceQuery.query` supports both item shorthand and envelope projection:
+
+```txt
+fields=id,name
+fields=items{id,name},meta{page,perPage,itemCount,pageCount}
+```

@@ -21,21 +21,25 @@ const result = await ResourceQuery.query({
 `schema` accepts either a manual `FieldSchema` or a Swagger-decorated DTO class. The helper:
 
 - parses and validates `query.fields`.
-- merges generated relation includes into a query copy.
+- merges endpoint-required includes, client includes, and generated relation includes into a query copy.
 - calls `service.query` or `service.findById`.
 - maps models to DTOs, including async mappers.
-- applies `Fields.project` to the mapped DTO response.
+- applies `Fields.project` to the mapped DTO response. Paginated responses can project either item fields (`fields=id,title`) or the response envelope (`fields=items{id,title},meta{page,perPage}`).
 
 ## prepareFieldsQuery
 
 ```ts
-const prepared = prepareFieldsQuery(query, UserDTO);
+const prepared = prepareFieldsQuery(query, UserDTO, {
+  baseInclude: {
+    organization: true,
+  },
+});
 
 await usersService.query(prepared.query, ability);
 Fields.project(dtoItems, prepared.projection);
 ```
 
-`prepareFieldsQuery` does not mutate the original query object.
+`prepareFieldsQuery` does not mutate the original query object. `baseInclude` is useful when the endpoint, CASL-aware mapper, or response policy needs relations even when the client omits `fields`; the client `include` query parameter extends that include object.
 
 ## Low-Level Flow
 
@@ -67,7 +71,7 @@ const schema: FieldSchema = {
 
 ## Decorators and Errors
 
-Use `ApiFieldsQuery()` to document the query parameter and invalid-fields response in Swagger. Use `@FieldsQuery(DTO)` when a controller parameter should receive a validated `FieldsProjection`.
+Use `ApiResourceQuery()` for list endpoints that expose `fields`, `page`, `perPage`, `select`, `include`, `where`, `orderBy`, and `distinct`. Use `ApiFieldsQuery()` for detail or mutation endpoints that only expose response projection. Use `@FieldsQuery(DTO)` when a controller parameter should receive a validated `FieldsProjection`.
 
 ```ts
 @Get()

@@ -2,15 +2,19 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuard
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiErrorResponses,
+  ApiFieldsQuery,
   ApiPaginatedResponse,
   ApiParamId,
+  ApiResourceQuery,
   CheckPolicies,
+  Fields,
   FindByIdDTO,
   PoliciesGuard,
   QueryDTO,
   ResourceQuery,
+  prepareFieldsQuery,
 } from '@querry-kit/nest';
-import { BookDTO, type BookModel, CreateBookDTO, UpdateBookDTO } from './book.dto.js';
+import { BookDTO, CreateBookDTO, UpdateBookDTO, type BookModel } from './book.dto.js';
 import { BooksService, type BookTypeMap, type DemoAbility } from './books.service.js';
 
 type DemoRequest = {
@@ -26,14 +30,16 @@ export class BooksController {
   @Get()
   @CheckPolicies<DemoAbility>((ability) => ability.can('read', 'Book'))
   @ApiOperation({ summary: 'Query published books' })
+  @ApiResourceQuery()
   @ApiPaginatedResponse({ description: 'Paginated list of published books', model: BookDTO })
-  @ApiErrorResponses({ forbiddenCodes: ['InsufficientPermissions'] })
+  @ApiErrorResponses({ badRequestDescription: 'Invalid query parameter.', forbiddenCodes: ['InsufficientPermissions'] })
   async query(@Req() req: DemoRequest, @Query() query: QueryDTO<BookTypeMap>) {
     return ResourceQuery.query({
       service: this.booksService,
       query,
       schema: BookDTO,
       ability: req.ability,
+      include: { author: true },
       map: (book: BookModel) => BookDTO.fromModel(book),
     });
   }
@@ -42,7 +48,13 @@ export class BooksController {
   @CheckPolicies<DemoAbility>((ability) => ability.can('read', 'Book'))
   @ApiParamId({ description: 'Book ID', name: 'id' })
   @ApiOperation({ summary: 'Find a published book by ID' })
-  @ApiErrorResponses({ forbiddenCodes: ['InsufficientPermissions'], notFoundCodes: ['BookNotFound'] })
+  @ApiFieldsQuery()
+  @ApiOkResponse({ description: 'The published book', type: BookDTO })
+  @ApiErrorResponses({
+    badRequestDescription: 'Invalid fields or include query parameter.',
+    forbiddenCodes: ['InsufficientPermissions'],
+    notFoundCodes: ['BookNotFound'],
+  })
   async findById(@Param('id') id: string, @Req() req: DemoRequest, @Query() query: FindByIdDTO<BookTypeMap>) {
     return ResourceQuery.findById({
       service: this.booksService,
@@ -57,28 +69,52 @@ export class BooksController {
   @Post()
   @CheckPolicies<DemoAbility>((ability) => ability.can('create', 'Book'))
   @ApiOperation({ summary: 'Create a book' })
+  @ApiFieldsQuery()
   @ApiCreatedResponse({ description: 'The created book', type: BookDTO })
-  @ApiErrorResponses({ forbiddenCodes: ['InsufficientPermissions'] })
-  async create(@Body() data: CreateBookDTO) {
-    return BookDTO.fromModel(await this.booksService.create(data));
+  @ApiErrorResponses({
+    badRequestDescription: 'Invalid request body or fields query parameter.',
+    forbiddenCodes: ['InsufficientPermissions'],
+  })
+  async create(@Body() data: CreateBookDTO, @Query() query: FindByIdDTO<BookTypeMap>) {
+    const prepared = prepareFieldsQuery(query, BookDTO);
+    const dto = BookDTO.fromModel(await this.booksService.create(data, prepared.query));
+
+    return Fields.project(dto, prepared.projection);
   }
 
   @Patch(':id')
   @CheckPolicies<DemoAbility>((ability) => ability.can('update', 'Book'))
   @ApiParamId({ description: 'Book ID', name: 'id' })
   @ApiOperation({ summary: 'Update a book' })
+  @ApiFieldsQuery()
   @ApiOkResponse({ description: 'The updated book', type: BookDTO })
-  @ApiErrorResponses({ forbiddenCodes: ['InsufficientPermissions'], notFoundCodes: ['BookNotFound'] })
-  async update(@Param('id') id: string, @Body() data: UpdateBookDTO) {
-    return BookDTO.fromModel(await this.booksService.update(id, data));
+  @ApiErrorResponses({
+    badRequestDescription: 'Invalid request body or fields query parameter.',
+    forbiddenCodes: ['InsufficientPermissions'],
+    notFoundCodes: ['BookNotFound'],
+  })
+  async update(@Param('id') id: string, @Body() data: UpdateBookDTO, @Query() query: FindByIdDTO<BookTypeMap>) {
+    const prepared = prepareFieldsQuery(query, BookDTO);
+    const dto = BookDTO.fromModel(await this.booksService.update(id, data, prepared.query));
+
+    return Fields.project(dto, prepared.projection);
   }
 
   @Delete(':id')
   @CheckPolicies<DemoAbility>((ability) => ability.can('delete', 'Book'))
   @ApiParamId({ description: 'Book ID', name: 'id' })
   @ApiOperation({ summary: 'Delete a book' })
-  @ApiErrorResponses({ forbiddenCodes: ['InsufficientPermissions'], notFoundCodes: ['BookNotFound'] })
-  async remove(@Param('id') id: string) {
-    return BookDTO.fromModel(await this.booksService.remove(id));
+  @ApiFieldsQuery()
+  @ApiOkResponse({ description: 'The deleted book', type: BookDTO })
+  @ApiErrorResponses({
+    badRequestDescription: 'Invalid fields or include query parameter.',
+    forbiddenCodes: ['InsufficientPermissions'],
+    notFoundCodes: ['BookNotFound'],
+  })
+  async remove(@Param('id') id: string, @Query() query: FindByIdDTO<BookTypeMap>) {
+    const prepared = prepareFieldsQuery(query, BookDTO);
+    const dto = BookDTO.fromModel(await this.booksService.remove(id, prepared.query));
+
+    return Fields.project(dto, prepared.projection);
   }
 }

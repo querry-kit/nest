@@ -1,5 +1,6 @@
 import { buildFieldSchemaFromDto } from './core/dto-schema';
 import { Fields } from './core/fields';
+import { mergeInclude } from './core/include';
 import type { DtoClass } from './types/dto-schema.types';
 import type { FieldsParseOptions } from './types/fields.types';
 import type { FieldSchema, FieldsProjection } from './types/schema.types';
@@ -12,7 +13,10 @@ export type SchemaOrDto = FieldSchema | DtoClass;
 /**
  * Options for {@link prepareFieldsQuery}.
  */
-export type PrepareFieldsQueryOptions = FieldsParseOptions;
+export type PrepareFieldsQueryOptions = FieldsParseOptions & {
+  /** Include configuration required by the endpoint before client fields are applied. */
+  baseInclude?: unknown;
+};
 
 /**
  * Prepared query and parsed fields projection.
@@ -43,25 +47,32 @@ export function prepareFieldsQuery<TQuery extends FieldsQueryLike>(
   options?: PrepareFieldsQueryOptions,
 ): PreparedFieldsQuery<TQuery> {
   const schema = resolveFieldSchema(schemaOrDto);
+  const mergedInclude = mergeInclude(options?.baseInclude, query.include);
   const projection = Fields.parseAndValidate(query.fields, schema, {
     ...options,
-    include: options?.include ?? query.include,
+    include: options?.include ?? mergedInclude,
   });
 
   if (!projection) {
-    return { query: { ...query }, projection };
+    return {
+      query: {
+        ...query,
+        ...(typeof mergedInclude === 'undefined' ? {} : { include: mergedInclude }),
+      },
+      projection,
+    };
   }
 
   return {
     query: {
       ...query,
-      include: Fields.include(projection, schema, query.include),
+      include: Fields.include(projection, schema, mergedInclude),
     },
     projection,
   };
 }
 
-function resolveFieldSchema(schemaOrDto: SchemaOrDto): FieldSchema {
+export function resolveFieldSchema(schemaOrDto: SchemaOrDto): FieldSchema {
   if (typeof schemaOrDto === 'function') {
     return buildFieldSchemaFromDto(schemaOrDto);
   }
