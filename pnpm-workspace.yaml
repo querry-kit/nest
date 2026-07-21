@@ -1,0 +1,18 @@
+packages:
+  - .
+  - docs
+
+nodeVersion: 24.18.0
+minimumReleaseAge: 1440
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@prisma/client'
+  - '@scarf/scarf'
+  - 'esbuild'
+
+allowBuilds:
+  '@prisma/client': true
+  '@scarf/scarf': true
+  esbuild: true
+  unrs-resolver: true
