@@ -19,6 +19,16 @@ describe('Fields facade', () => {
     );
   });
 
+  it('preserves explicit empty projections and validates required relation includes', () => {
+    expect(Fields.parseAndValidate('', schema)).toEqual({});
+    expect(
+      Fields.parseAndValidate('profile{avatar{id}}', schema, {
+        requireIncludeForRelations: true,
+        include: { profile: { include: { avatar: true } } },
+      }),
+    ).toEqual({ profile: { avatar: { id: true } } });
+  });
+
   it('projects through the facade', () => {
     expect(Fields.project({ id: '1', email: 'a@example.test' }, { id: true })).toEqual({
       id: '1',

@@ -69,6 +69,7 @@
 ## Testing and Verification
 
 - Aim for 100% runtime line coverage. Treat untested executable paths as work to finish, rather than hiding them through coverage collection exclusions; type-only and generated files are outside this target.
+- Coverage uses Jest's V8 provider; exclude only type-only or generated files, never executable runtime modules.
 - New or changed runtime modules should reach 100% line coverage before they are handed off.
 - Run focused tests for the changed area when possible.
 - For code changes, run:
@@ -106,6 +107,7 @@ pnpm examples:build
 
 - Keep commits scoped and intentional.
 - Do not push without an explicit user request.
+- After creating and pushing a feature branch, immediately open a draft pull request against the default branch and assign `@tobiaswaelde`.
 - When pushing package-relevant changes, ensure a matching Changeset is included in the same pushed branch state.
 - Do not revert unrelated user changes.
 - Check `git status --short --branch` before committing or pushing when the directory is a Git repository.

@@ -35,6 +35,15 @@ describe('CheckPolicies and PoliciesGuard', () => {
     expect(reflector.get).toHaveBeenCalledWith(CHECK_POLICIES_KEY, routeHandler);
   });
 
+  it('accepts routes without policy handlers', () => {
+    const reflector = {
+      get: jest.fn().mockReturnValue(undefined),
+    } as unknown as Reflector;
+    const guard = new PoliciesGuard(reflector);
+
+    expect(guard.canActivate(createContext(jest.fn()) as never)).toBe(true);
+  });
+
   it('throws forbidden exceptions when ability is missing or a policy fails', () => {
     const reflector = {
       get: jest.fn().mockReturnValue([jest.fn().mockReturnValue(false)]),
