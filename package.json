@@ -2,6 +2,21 @@
   "name": "@querry-kit/nest",
   "version": "0.0.1",
   "description": "Consolidated NestJS helpers for Query Kit fields, Prisma-style query services, CASL policies, decorators, pipes, and response projection.",
+  "keywords": [
+    "nestjs",
+    "query-kit",
+    "prisma",
+    "casl",
+    "fields",
+    "projection",
+    "pagination",
+    "openapi",
+    "swagger",
+    "decorators",
+    "pipes",
+    "query-service",
+    "typescript"
+  ],
   "license": "MIT",
   "homepage": "https://querry-kit.github.io/nest/",
   "repository": {

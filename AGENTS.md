@@ -11,6 +11,7 @@
 
 ## Change Management
 
+- Create a Changeset for every commit, including repository maintenance commits.
 - Every package-relevant change that is pushed must include a Changeset.
 - Package-relevant changes include public API changes, runtime behavior changes, package metadata changes, README changes, and published documentation changes.
 - Pure repository maintenance can skip a Changeset when it does not affect the published package or user-facing documentation. Examples include CI comment updates, local tooling notes, and agent-only instructions.
