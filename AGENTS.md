@@ -106,6 +106,7 @@ pnpm examples:build
 
 - Keep commits scoped and intentional.
 - Do not push without an explicit user request.
+- After creating and pushing a feature branch, immediately open a draft pull request against the default branch and assign `@tobiaswaelde`.
 - When pushing package-relevant changes, ensure a matching Changeset is included in the same pushed branch state.
 - Do not revert unrelated user changes.
 - Check `git status --short --branch` before committing or pushing when the directory is a Git repository.
