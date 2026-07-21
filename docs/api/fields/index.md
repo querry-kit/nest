@@ -24,7 +24,7 @@ const result = await ResourceQuery.query({
 - merges endpoint-required includes, client includes, and generated relation includes into a query copy.
 - calls `service.query` or `service.findById`.
 - maps models to DTOs, including async mappers.
-- applies `Fields.project` to the mapped DTO response. Paginated responses can project either item fields (`fields=id,title`) or the response envelope (`fields=items{id,title},meta{page,perPage}`).
+- applies `Fields.project` to the mapped DTO response. Paginated responses can project either item fields (`fields=id,title` or `fields={id,title}`) or the response envelope (`fields=items{id,title},meta{page,perPage}`). An explicit empty selection (`fields=` or `fields={}`) returns an empty envelope; `items{}` can intentionally return empty item objects.
 
 ## prepareFieldsQuery
 

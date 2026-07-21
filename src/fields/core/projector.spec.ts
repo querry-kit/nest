@@ -18,4 +18,9 @@ describe('FieldsProjector', () => {
     expect(FieldsProjector.project(null, { id: true })).toBeNull();
     expect(FieldsProjector.project('value', { id: true })).toBe('value');
   });
+
+  it('removes every object field for an empty projection', () => {
+    expect(FieldsProjector.project({ id: '1', email: 'a@example.test' }, {})).toEqual({});
+    expect(FieldsProjector.project([{ id: '1' }, { id: '2' }], {})).toEqual([{}, {}]);
+  });
 });

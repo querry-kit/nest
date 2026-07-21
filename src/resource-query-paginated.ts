@@ -38,7 +38,7 @@ export function preparePaginatedFieldsQuery<TQuery extends { fields?: unknown; i
   };
   const parsedProjection = FieldsParser.parse(query.fields);
 
-  if (parsedProjection && hasPaginatedProjectionShape(parsedProjection)) {
+  if (parsedProjection && (isEmptyProjection(parsedProjection) || hasPaginatedProjectionShape(parsedProjection))) {
     const responseProjection = Fields.parseAndValidate(query.fields, responseSchema, options)!;
     const itemProjection = getItemProjection(responseProjection);
     const include = itemProjection
@@ -66,6 +66,10 @@ export function preparePaginatedFieldsQuery<TQuery extends { fields?: unknown; i
 
 function hasPaginatedProjectionShape(projection: FieldsProjection): boolean {
   return Object.keys(projection).some((key) => key === 'items' || key === 'meta');
+}
+
+function isEmptyProjection(projection: FieldsProjection): boolean {
+  return Object.keys(projection).length === 0;
 }
 
 function getItemProjection(projection: FieldsProjection): FieldsProjection | undefined {

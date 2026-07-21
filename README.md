@@ -164,12 +164,16 @@ The helper uses the `read` action by default. Pass `{ action: RoleAction.READ }`
 
 ## 🎯 Fields
 
-`fields` is optional by default. When it is present, Query Kit validates the syntax and selected fields, adds required relation includes, and projects the returned DTOs.
+`fields` is optional by default. When omitted, Query Kit returns the complete DTO response. When present, it validates the syntax and selected fields, adds required relation includes, and projects the returned DTOs. Outer braces are optional, so `{id,title}` is equivalent to `id,title`.
 
 ```txt
 GET /books?fields=id,title
+GET /books?fields={id,title}
 GET /books?fields=items{id,title},meta{page,perPage,itemCount,pageCount}
+GET /books?fields=items{},meta{page}
 ```
+
+An explicit empty value (`?fields=`) or empty outer selection (`?fields={}`) returns `{}`. Empty nested selections are also valid: `items{}` produces empty item objects, while `meta{page}` keeps only the requested page metadata. A value containing only whitespace remains invalid.
 
 Use `prepareFieldsQuery` directly when a controller needs custom service orchestration:
 

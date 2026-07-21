@@ -12,14 +12,12 @@
 ## Change Management
 
 - Create a Changeset for every commit, including repository maintenance commits.
-- Every package-relevant change that is pushed must include a Changeset.
-- Package-relevant changes include public API changes, runtime behavior changes, package metadata changes, README changes, and published documentation changes.
-- Pure repository maintenance can skip a Changeset when it does not affect the published package or user-facing documentation. Examples include CI comment updates, local tooling notes, and agent-only instructions.
+- Every committed change must include a Changeset and an appropriate documentation update. Do not create commits for local, temporary, or generated-only work.
+- Public API, runtime behavior, package metadata, README, and published documentation changes must update the affected README, VitePress pages, and JSDoc where applicable. Internal changes must update the relevant developer documentation.
 - Use the smallest correct SemVer bump:
   - `patch` for fixes, documentation improvements that affect published package metadata, and non-breaking internal improvements.
   - `minor` for new backwards-compatible features.
   - `major` for breaking public API changes.
-- Do not create Changesets for purely local, temporary, or generated-only work unless it will be pushed.
 - Keep Changeset summaries short and user-facing.
 
 ## Public API
@@ -122,7 +120,7 @@ pnpm examples:build
 
 ## Documentation
 
-- Keep README and VitePress docs aligned when behavior, installation, release, examples, or development workflows change.
+- Every committed change needs documentation appropriate to its audience and scope. Keep README and VitePress docs aligned when behavior, installation, release, examples, or development workflows change, and update developer documentation for internal changes.
 - Developer documentation should be available in English by default for Query Kit packages.
 - Prefer examples that match the published package name:
 
