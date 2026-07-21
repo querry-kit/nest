@@ -1,5 +1,19 @@
 # @querry-kit/nest
 
+## 0.2.0
+
+### Minor Changes
+
+- 3cdc028: Add CASL-aware DTO field filtering, coverage reporting, and refreshed documentation styling.
+
+### Patch Changes
+
+- 96b9c10: Add package discovery keywords.
+- 12481ed: Document CASL query and conditional write service wiring.
+- 5d32bf2: Show named resource query and application error examples in OpenAPI.
+- acee7ce: Fix CASL Prisma v1 accessibility resolver support.
+- 3d9ec19: Document the runtime coverage quality target.
+
 ## 0.1.0
 
 ### Minor Changes
