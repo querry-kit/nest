@@ -1,5 +1,16 @@
 # @querry-kit/nest
 
+## 0.3.0
+
+### Minor Changes
+
+- 059fe27: Allow empty and outer-braced Fields projections.
+
+### Patch Changes
+
+- 6e26ed5: Improve Fields coverage and assign release pull requests automatically.
+- 575a52d: Improve runtime coverage reporting and regression coverage.
+
 ## 0.2.0
 
 ### Minor Changes
