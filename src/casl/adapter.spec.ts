@@ -29,6 +29,27 @@ describe('CASL adapter', () => {
     expect(ofType).toHaveBeenCalledWith('Book');
   });
 
+  it('maps CASL Prisma v1 proxy records without probing ofType as a subject', () => {
+    const ability = { can: true } as never;
+    const records = new Proxy(
+      { Book: { organizationId: 'org' } },
+      {
+        get(target, property) {
+          if (property === 'ofType') {
+            throw new Error('ofType is interpreted as a subject by CASL Prisma v1.');
+          }
+
+          return target[property as keyof typeof target];
+        },
+      },
+    );
+    mockAccessibleBy.mockReturnValue(records);
+
+    const resolver = createCaslAccessibleWhere({ action: 'read' });
+
+    expect(resolver(ability, 'Book')).toEqual({ organizationId: 'org' });
+  });
+
   it('uses read as the default action', () => {
     const ability = { can: true } as never;
     mockAccessibleBy.mockReturnValue({ Book: { id: '1' } });
