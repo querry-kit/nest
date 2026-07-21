@@ -17,11 +17,10 @@ export type BookInclude = {
   tags?: boolean;
 };
 
-export type BookWhereInput =
-  | Partial<Pick<BookModel, 'id' | 'title' | 'isbn' | 'published' | 'authorId'>>
-  | {
-      AND?: BookWhereInput[];
-    };
+export type BookWhereInput = Partial<Pick<BookModel, 'id' | 'title' | 'isbn' | 'published' | 'authorId'>> & {
+  AND?: BookWhereInput[];
+  OR?: BookWhereInput[];
+};
 
 const bookRows: BookModel[] = [
   {
@@ -142,19 +141,17 @@ export class BookDelegate {
   }
 
   private filter(where: BookWhereInput = {}): BookModel[] {
-    if ('AND' in where && Array.isArray(where.AND)) {
-      return bookRows.filter((book) => where.AND?.every((condition) => this.matches(book, condition)) ?? true);
-    }
-
     return bookRows.filter((book) => this.matches(book, where));
   }
 
   private matches(book: BookModel, where: BookWhereInput): boolean {
-    if ('AND' in where && Array.isArray(where.AND)) {
-      return where.AND.every((condition) => this.matches(book, condition));
-    }
+    const { AND, OR, ...fields } = where;
 
-    return Object.entries(where).every(([key, value]) => book[key as keyof BookModel] === value);
+    return (
+      (AND?.every((condition) => this.matches(book, condition)) ?? true) &&
+      (OR?.some((condition) => this.matches(book, condition)) ?? true) &&
+      Object.entries(fields).every(([key, value]) => book[key as keyof BookModel] === value)
+    );
   }
 
   private sort(books: BookModel[], orderBy?: FindArgs['orderBy']): BookModel[] {

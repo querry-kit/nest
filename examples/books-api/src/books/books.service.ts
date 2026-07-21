@@ -1,11 +1,41 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { QueryService, type BaseDelegateTypeMap, type QueryOptionsMap } from '@querry-kit/nest';
+import { AbilityBuilder, PureAbility, subject } from '@casl/ability';
+import { createPrismaAbility } from '@casl/prisma';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  createCaslAccessibleWhere,
+  QueryService,
+  type BaseDelegateTypeMap,
+  type QueryOptionsMap,
+} from '@querry-kit/nest';
 import { BookDelegate, type BookInclude, type BookWhereInput } from './book.delegate.js';
 import type { BookModel, CreateBookDTO, UpdateBookDTO } from './book.dto.js';
 
-export type DemoAbility = {
-  can(action: string, subject: string): boolean;
-};
+export enum BookAction {
+  Create = 'create',
+  Read = 'read',
+  Update = 'update',
+  Delete = 'delete',
+}
+
+export const BookSubject = 'Book';
+
+export type DemoAbility = PureAbility<[BookAction, any], any>;
+
+/**
+ * Creates the ability used by the in-memory example API.
+ *
+ * @returns {DemoAbility} Ability that reads published books and updates drafts only.
+ */
+export function createDemoAbility(): DemoAbility {
+  const { can, build } = new AbilityBuilder<DemoAbility>(createPrismaAbility);
+
+  can(BookAction.Read, BookSubject, { published: true });
+  can(BookAction.Create, BookSubject);
+  can(BookAction.Update, BookSubject, { published: false });
+  can(BookAction.Delete, BookSubject);
+
+  return build();
+}
 
 export interface BookTypeMap extends BaseDelegateTypeMap {
   select: Partial<Record<keyof BookModel, boolean>>;
@@ -24,15 +54,17 @@ export class BooksService extends QueryService<
   BookDelegate,
   QueryOptionsMap<BookTypeMap>,
   DemoAbility,
-  'Book'
+  typeof BookSubject
 > {
   private readonly delegate: BookDelegate;
 
   constructor() {
     const delegate = new BookDelegate();
     super(delegate, {
-      subject: 'Book',
-      accessibleWhere: () => ({ published: true }),
+      subject: BookSubject,
+      accessibleWhere: createCaslAccessibleWhere<DemoAbility, typeof BookSubject, BookAction>({
+        action: BookAction.Read,
+      }),
     });
     this.delegate = delegate;
   }
@@ -53,7 +85,17 @@ export class BooksService extends QueryService<
     id: string,
     data: UpdateBookDTO,
     query: QueryOptionsMap<BookTypeMap>['findById'] = {},
+    ability?: DemoAbility,
   ): Promise<BookModel> {
+    const existing = await this.delegate.findUnique({ where: { id } });
+    if (!existing) {
+      throw new NotFoundException('Book not found.');
+    }
+
+    if (!ability?.can(BookAction.Update, subject(BookSubject, existing))) {
+      throw new ForbiddenException('Insufficient permissions.');
+    }
+
     const updated = await this.delegate.update({
       where: { id },
       data,
