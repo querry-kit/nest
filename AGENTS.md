@@ -69,6 +69,7 @@
 ## Testing and Verification
 
 - Aim for 100% runtime line coverage. Treat untested executable paths as work to finish, rather than hiding them through coverage collection exclusions; type-only and generated files are outside this target.
+- Coverage uses Jest's V8 provider; exclude only type-only or generated files, never executable runtime modules.
 - New or changed runtime modules should reach 100% line coverage before they are handed off.
 - Run focused tests for the changed area when possible.
 - For code changes, run:

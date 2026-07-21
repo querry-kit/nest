@@ -73,4 +73,9 @@ describe('EmptyStringToNullPipe', () => {
 
     expect(result).toEqual({ search: '  query  ' });
   });
+
+  it('keeps primitive and null body values unchanged', () => {
+    expect(pipe.transform(42, bodyMeta)).toBe(42);
+    expect(pipe.transform(null, bodyMeta)).toBeNull();
+  });
 });

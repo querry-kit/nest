@@ -41,4 +41,25 @@ describe('FieldsExceptionFilter', () => {
       path: 'name',
     });
   });
+
+  it('serializes string exception responses', () => {
+    const json = jest.fn();
+    const status = jest.fn(() => ({ json }));
+    const host = {
+      switchToHttp: () => ({
+        getResponse: () => ({ status }),
+      }),
+    };
+    const exception = {
+      getStatus: () => 400,
+      getResponse: () => 'Invalid fields query parameter',
+    } as FieldsBadRequestException;
+
+    new FieldsExceptionFilter().catch(exception, host as never);
+
+    expect(json).toHaveBeenCalledWith({
+      statusCode: 400,
+      message: 'Invalid fields query parameter',
+    });
+  });
 });
