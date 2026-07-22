@@ -17,6 +17,9 @@ hero:
     - theme: alt
       text: GitHub
       link: https://github.com/querry-kit/nest
+    - theme: alt
+      text: Querry Kit Overview
+      link: https://querry-kit.github.io/querry-kit/
 features:
   - title: Resource query facade
     icon: 🧭
@@ -39,3 +42,7 @@ features:
     link: /api/openapi
     linkText: Browse utilities
 ---
+
+## Querry Kit Ecosystem
+
+[@querry-kit/querry-kit](https://querry-kit.github.io/querry-kit/) is the overview for the three core repositories: `@querry-kit/nest`, `@querry-kit/nuxt`, and `@querry-kit/nuxt-ui`. It also contains a comprehensive example combining an API with a web application.

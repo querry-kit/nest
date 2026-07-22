@@ -20,8 +20,19 @@ Consolidated NestJS helpers for Query Kit APIs: fields projection, Prisma-style 
 
 📖 Documentation: https://querry-kit.github.io/nest/
 
+## 🌐 Querry Kit Ecosystem
+
+The [Querry Kit overview](https://querry-kit.github.io/querry-kit/) connects the three main repositories:
+
+- [`@querry-kit/nest`](https://github.com/querry-kit/nest) for the Query Kit-compatible NestJS API and controller patterns.
+- [`@querry-kit/nuxt`](https://github.com/querry-kit/nuxt) for typed API clients and headless Vue/Nuxt data primitives.
+- [`@querry-kit/nuxt-ui`](https://github.com/querry-kit/nuxt-ui) for Nuxt UI integrations built on these primitives.
+
+It will also contain the complete API-and-webapp example that shows the packages working together end to end.
+
 ## 📚 Table of Contents <!-- omit in toc -->
 
+- [🌐 Querry Kit Ecosystem](#-querry-kit-ecosystem)
 - [📦 Install](#-install)
 - [🚀 Release Workflow](#-release-workflow)
 - [🧩 Usage](#-usage)

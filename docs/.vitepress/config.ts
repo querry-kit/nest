@@ -5,6 +5,7 @@ const repository = 'https://github.com/querry-kit/nest';
 const nav = [
   { text: 'Guide', link: '/guide/getting-started' },
   { text: 'API', link: '/api/' },
+  { text: 'Querry Kit', link: 'https://querry-kit.github.io/querry-kit/' },
   { text: 'Changelog', link: '/changelog' },
 ];
 
