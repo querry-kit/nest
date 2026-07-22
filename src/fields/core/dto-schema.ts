@@ -1,6 +1,6 @@
 import { DtoClass, ReflectWithMetadata, SwaggerPropertyMetadata } from '../types/dto-schema.types';
 import { FieldSchema } from '../types/schema.types';
-import { createRelationSchemaNode } from './schema';
+import { relation } from './schema';
 
 const SWAGGER_PROPERTIES_ARRAY = 'swagger/apiModelPropertiesArray';
 const SWAGGER_PROPERTY = 'swagger/apiModelProperties';
@@ -86,11 +86,11 @@ export function buildFieldSchemaFromDto(dtoClass: DtoClass, visited = new Set<Dt
 
     if (isDtoClass(fieldType)) {
       if (visited.has(fieldType)) {
-        schema[field] = createRelationSchemaNode({});
+        schema[field] = relation({});
       } else {
         const nextVisited = new Set(visited);
         nextVisited.add(fieldType);
-        schema[field] = createRelationSchemaNode(buildFieldSchemaFromDto(fieldType, nextVisited));
+        schema[field] = relation(buildFieldSchemaFromDto(fieldType, nextVisited));
       }
     } else {
       schema[field] = true;

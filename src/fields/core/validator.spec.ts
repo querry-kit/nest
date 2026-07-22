@@ -1,13 +1,13 @@
-import { createRelationSchemaNode, FieldsBadRequestException, FieldSchema, FieldsValidator } from '../index';
+import { FieldsBadRequestException, FieldSchema, FieldsValidator, relation } from '../index';
 
 describe('FieldsValidator', () => {
   const schema: FieldSchema = {
     id: true,
     email: true,
-    profile: createRelationSchemaNode({
+    profile: relation({
       id: true,
       firstName: true,
-      avatar: createRelationSchemaNode({ id: true }),
+      avatar: relation({ id: true }),
     }),
   };
 

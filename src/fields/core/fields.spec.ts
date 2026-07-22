@@ -1,11 +1,11 @@
-import { createRelationSchemaNode, Fields, FieldsBadRequestException, FieldSchema } from '../index';
+import { Fields, FieldsBadRequestException, FieldSchema, relation } from '../index';
 
 describe('Fields facade', () => {
   const schema: FieldSchema = {
     id: true,
-    profile: createRelationSchemaNode({
+    profile: relation({
       id: true,
-      avatar: createRelationSchemaNode({ id: true }),
+      avatar: relation({ id: true }),
     }),
   };
 

@@ -1,4 +1,4 @@
-import { createRelationSchemaNode, type FieldSchema } from './fields/index';
+import { relation, type FieldSchema } from './fields/index';
 import { PageMetaDTO } from './pagination/page-meta.dto';
 import { ResourceQuery } from './resource-query';
 
@@ -6,7 +6,7 @@ describe('ResourceQuery', () => {
   const schema: FieldSchema = {
     id: true,
     name: true,
-    profile: createRelationSchemaNode({ id: true, email: true }),
+    profile: relation({ id: true, email: true }),
   };
   const ability = { can: true };
 

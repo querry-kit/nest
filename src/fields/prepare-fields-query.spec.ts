@@ -1,13 +1,13 @@
-import { FieldsBadRequestException, createRelationSchemaNode, type FieldSchema } from './index';
+import { FieldsBadRequestException, relation, type FieldSchema } from './index';
 import { prepareFieldsQuery } from './prepare-fields-query';
 
 describe('prepareFieldsQuery', () => {
   const schema: FieldSchema = {
     id: true,
     name: true,
-    profile: createRelationSchemaNode({
+    profile: relation({
       id: true,
-      avatar: createRelationSchemaNode({ id: true }),
+      avatar: relation({ id: true }),
     }),
   };
 

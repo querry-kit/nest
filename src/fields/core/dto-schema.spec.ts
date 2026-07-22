@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { buildFieldSchemaFromDto, createRelationSchemaNode, getDtoFields, relation } from '../index';
+import { buildFieldSchemaFromDto, getDtoFields, relation } from '../index';
 
 class ProfileDto {
   @ApiProperty()
@@ -35,7 +35,7 @@ class NoMetadataDto {
 
 describe('DTO field schema', () => {
   it('creates manual relation schema nodes through the relation alias', () => {
-    expect(relation({ id: true })).toEqual(createRelationSchemaNode({ id: true }));
+    expect(relation({ id: true })).toEqual({ relation: true, fields: { id: true } });
   });
 
   it('reads Swagger DTO fields', () => {
@@ -46,7 +46,7 @@ describe('DTO field schema', () => {
     expect(buildFieldSchemaFromDto(UserDto)).toEqual({
       id: true,
       email: true,
-      profile: createRelationSchemaNode({ id: true, firstName: true }),
+      profile: relation({ id: true, firstName: true }),
     });
   });
 
@@ -55,9 +55,9 @@ describe('DTO field schema', () => {
     expect(buildFieldSchemaFromDto(NoMetadataDto)).toEqual({});
     expect(buildFieldSchemaFromDto(TreeDto)).toEqual({
       id: true,
-      parent: createRelationSchemaNode({
+      parent: relation({
         id: true,
-        parent: createRelationSchemaNode({}),
+        parent: relation({}),
       }),
     });
   });

@@ -21,14 +21,3 @@ export function parseObjectProperties(obj: any): any {
 
   return parsed;
 }
-
-/**
- * Parses an object from an unparsed object.
- *
- * @deprecated Use `parseObjectProperties` for clearer object utility imports.
- * @param {any} obj The unparsed object.
- * @returns {any} The parsed object.
- */
-export function parseFromObject(obj: any): any {
-  return parseObjectProperties(obj);
-}

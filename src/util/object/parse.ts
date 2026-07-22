@@ -42,14 +42,3 @@ export function parseObject(obj: any): any {
 
   return String(obj);
 }
-
-/**
- * Parses query-like values into JavaScript primitives and nested objects.
- *
- * @deprecated Use `parseObject` for clearer object utility imports.
- * @param {any} obj The value to parse.
- * @returns {any} The parsed value.
- */
-export function parse(obj: any): any {
-  return parseObject(obj);
-}

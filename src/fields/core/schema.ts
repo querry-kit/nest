@@ -6,18 +6,8 @@ import { FieldSchema, FieldSchemaNode } from '../types/schema.types';
  * @param {FieldSchema} fields The nested field schema for the relation.
  * @returns {FieldSchemaNode} The relation schema node.
  */
-export function createRelationSchemaNode(fields: FieldSchema): FieldSchemaNode {
-  return { relation: true, fields };
-}
-
-/**
- * Creates a relation schema node.
- *
- * @param {FieldSchema} fields The nested field schema for the relation.
- * @returns {FieldSchemaNode} The relation schema node.
- */
 export function relation(fields: FieldSchema): FieldSchemaNode {
-  return createRelationSchemaNode(fields);
+  return { relation: true, fields };
 }
 
 /**

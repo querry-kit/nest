@@ -1,4 +1,4 @@
-import { parse, parseObject } from './parse';
+import { parseObject } from './parse';
 
 describe('parseObject', () => {
   it('parses numeric strings to numbers', () => {
@@ -42,9 +42,5 @@ describe('parseObject', () => {
   it('preserves empty strings', () => {
     expect(parseObject('')).toBe('');
     expect(parseObject('   ')).toBe('   ');
-  });
-
-  it('keeps parse as a backwards-compatible alias', () => {
-    expect(parse({ page: '1' })).toEqual(parseObject({ page: '1' }));
   });
 });
