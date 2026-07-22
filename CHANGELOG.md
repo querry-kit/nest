@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 0.3.1
+
+### Patch Changes
+
+- 81a8410: Standardize the English README and contributor guidance.
+
 ## 0.3.0
 
 ### Minor Changes
