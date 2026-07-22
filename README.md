@@ -20,14 +20,23 @@ Consolidated NestJS helpers for Query Kit APIs: fields projection, Prisma-style 
 
 📖 Documentation: https://querry-kit.github.io/nest/
 
+## 🌐 Querry Kit Ecosystem
+
+The [Querry Kit overview](https://querry-kit.github.io/querry-kit/) connects the three core packages and the Workboard reference application:
+
+- [`@querry-kit/nest`](https://github.com/querry-kit/nest) provides the NestJS API and controller patterns.
+- [`@querry-kit/nuxt`](https://github.com/querry-kit/nuxt) provides typed API clients and headless Vue/Nuxt data primitives.
+- [`@querry-kit/nuxt-ui`](https://github.com/querry-kit/nuxt-ui) provides Nuxt UI table controls built on those primitives.
+
 ## 📚 Table of Contents <!-- omit in toc -->
 
+- [🌐 Querry Kit Ecosystem](#-querry-kit-ecosystem)
 - [📦 Install](#-install)
 - [🚀 Release Workflow](#-release-workflow)
 - [🧩 Usage](#-usage)
 - [🔐 CASL](#-casl)
 - [🎯 Fields](#-fields)
-- [Example API](#example-api)
+- [🧪 Example API](#-example-api)
 - [📖 Documentation](#-documentation)
 - [🛠 Development](#-development)
 
@@ -195,7 +204,7 @@ return {
 };
 ```
 
-## Example API
+## 🧪 Example API
 
 A small in-memory NestJS example lives in [`examples/books-api`](examples/books-api/). It uses books and authors to show relation includes, fields projection, pagination metadata, CASL-aware controller flow, query transformation, and OpenAPI documentation.
 

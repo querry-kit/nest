@@ -20,7 +20,7 @@
   - `major` for breaking public API changes.
 - Keep Changeset summaries short and user-facing.
 
-## Public API
+## Public API and TypeScript
 
 - Everything exported from `src/index.ts` and configured package subpath exports is public API.
 - Public subpaths include `.`, `./object`, `./fields`, `./dto`, `./pagination`, `./query-service`, `./casl`, `./swagger`, `./decorators`, and `./pipes`.
