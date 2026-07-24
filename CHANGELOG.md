@@ -1,5 +1,18 @@
 # @querry-kit/nest
 
+## 1.0.0
+
+### Major Changes
+
+- 3c3c611: Remove redundant and deprecated exports: `AggregateDTOType`, `createFromPath`, `diff`, `hasDifferences`, `parse`, `parseFromObject`, `createRelationSchemaNode`, and the `./swagger` subpath.
+
+  Migrate imports to `AggregateDTO`, `createObjectFromPath`, `diffObjects`, `hasObjectDifferences`, `parseObject`, `parseObjectProperties`, `relation`, and `@querry-kit/nest/decorators`.
+
+### Patch Changes
+
+- 802a93f: Move documentation to the central Querry Kit site and improve test coverage reporting.
+- ed31fd2: Fix release validation after moving documentation to the central Querry Kit site.
+
 ## 0.3.1
 
 ### Patch Changes
