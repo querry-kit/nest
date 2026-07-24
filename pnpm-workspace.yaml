@@ -1,6 +1,5 @@
 packages:
   - .
-  - docs
 
 nodeVersion: 24.18.0
 minimumReleaseAge: 1440

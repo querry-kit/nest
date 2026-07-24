@@ -259,6 +259,15 @@ describe('QueryService', () => {
     await expect(service.findById('1')).rejects.toThrow(InternalServerErrorException);
   });
 
+  it('maps delegate failures from find-one and find-many operations', async () => {
+    const delegate = new TestDelegate();
+    const service = new QueryService(delegate);
+    delegate.fail = new Error('delegate failed');
+
+    await expect(service.findOne({} as never)).rejects.toThrow(InternalServerErrorException);
+    await expect(service.findMany()).rejects.toThrow(InternalServerErrorException);
+  });
+
   it('maps forbidden-like query errors', async () => {
     const delegate = new TestDelegate();
     const service = new QueryService(delegate, {

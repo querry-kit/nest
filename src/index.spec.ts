@@ -2,11 +2,59 @@ import * as QueryKitNest from './index';
 
 describe('public API', () => {
   it('exports the main helpers from the package root', () => {
-    expect(QueryKitNest.Fields).toBeDefined();
-    expect(QueryKitNest.FieldsParser).toBeDefined();
-    expect(QueryKitNest.ResourceQuery).toBeDefined();
-    expect(QueryKitNest.QueryService).toBeDefined();
-    expect(QueryKitNest.parseObject).toBeDefined();
-    expect(QueryKitNest.filterCaslFields).toBeDefined();
+    for (const name of [
+      'AggregateDTO',
+      'ApiErrorResponses',
+      'ApiFieldsQuery',
+      'ApiPaginatedResponse',
+      'ApiParamId',
+      'ApiPropertyCreatedAt',
+      'ApiPropertyId',
+      'ApiPropertyUpdatedAt',
+      'ApiResourceQuery',
+      'CHECK_POLICIES_KEY',
+      'CheckPolicies',
+      'CountDTO',
+      'EmptyStringToNullPipe',
+      'Fields',
+      'FieldsBadRequestException',
+      'FieldsExceptionFilter',
+      'FieldsParser',
+      'FieldsProjector',
+      'FieldsQuery',
+      'FieldsValidator',
+      'FindByIdDTO',
+      'FindManyDTO',
+      'FindOneDTO',
+      'FindUniqueDTO',
+      'PageMetaDTO',
+      'PageOptionsDTO',
+      'PaginatedDTO',
+      'PoliciesGuard',
+      'QueryDTO',
+      'QueryService',
+      'QueryTransformPipe',
+      'ResourceQuery',
+      'ValidationUtil',
+      'buildFieldSchemaFromDto',
+      'createCaslAccessibleWhere',
+      'diffObjects',
+      'filterCaslFields',
+      'getDtoFields',
+      'hasObjectDifferences',
+      'isBoolean',
+      'isNumber',
+      'isObject',
+      'isPlainObject',
+      'parseBoolean',
+      'parseObject',
+      'parseObjectProperties',
+      'parseQueryObject',
+      'prepareFieldsQuery',
+      'relation',
+      'serializeDecimalValues',
+    ] as const) {
+      expect(QueryKitNest[name]).toBeDefined();
+    }
   });
 });

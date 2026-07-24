@@ -1,5 +1,16 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { FieldsBadRequestException, relation, type FieldSchema } from './index';
-import { prepareFieldsQuery } from './prepare-fields-query';
+import { prepareFieldsQuery, resolveFieldSchema } from './prepare-fields-query';
+
+class PreparedProfileDto {
+  @ApiProperty()
+  id!: string;
+}
+
+class PreparedUserDto {
+  @ApiProperty({ type: () => PreparedProfileDto })
+  profile!: PreparedProfileDto;
+}
 
 describe('prepareFieldsQuery', () => {
   const schema: FieldSchema = {
@@ -116,5 +127,11 @@ describe('prepareFieldsQuery', () => {
 
   it('throws fields bad request exceptions for invalid fields', () => {
     expect(() => prepareFieldsQuery({ fields: 'unknown' }, schema)).toThrow(FieldsBadRequestException);
+  });
+
+  it('accepts Swagger DTO classes as a field schema source', () => {
+    expect(resolveFieldSchema(PreparedUserDto)).toEqual({
+      profile: relation({ id: true }),
+    });
   });
 });

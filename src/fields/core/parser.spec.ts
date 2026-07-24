@@ -1,4 +1,5 @@
 import { FieldsBadRequestException, FieldsParser } from '../index';
+import { __FieldsParserTest } from './parser';
 
 describe('FieldsParser', () => {
   it('parses top-level and nested fields', () => {
@@ -39,6 +40,10 @@ describe('FieldsParser', () => {
     });
   });
 
+  it('accepts digits after a valid field-name start', () => {
+    expect(FieldsParser.parse('{field12,other_3}')).toEqual({ field12: true, other_3: true });
+  });
+
   it('rejects invalid field values', () => {
     expect(() => FieldsParser.parse({})).toThrow(FieldsBadRequestException);
     expect(() => FieldsParser.parse('   ')).toThrow(FieldsBadRequestException);
@@ -46,5 +51,13 @@ describe('FieldsParser', () => {
     expect(() => FieldsParser.parse('id email')).toThrow(FieldsBadRequestException);
     expect(() => FieldsParser.parse('{id}!')).toThrow(FieldsBadRequestException);
     expect(() => FieldsParser.parse('profile{id')).toThrow(FieldsBadRequestException);
+    expect(() => FieldsParser.parse('}')).toThrow(FieldsBadRequestException);
+  });
+
+  it('rejects an unexpected end while reading an identifier', () => {
+    const parser = new __FieldsParserTest.Parser('');
+    const parseName = (parser as unknown as { parseName: () => unknown }).parseName.bind(parser);
+
+    expect(parseName).toThrow(FieldsBadRequestException);
   });
 });

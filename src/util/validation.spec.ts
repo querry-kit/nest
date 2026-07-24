@@ -40,4 +40,29 @@ describe('ValidationUtil', () => {
       filter: [{ name: 'custom', constraints: ['Invalid filter.'] }],
     });
   });
+
+  it('maps empty nested validation error groups', () => {
+    const error = {
+      property: 'nested',
+      children: [],
+    } as unknown as ValidationError;
+
+    expect(ValidationUtil.mapValidationErrorsToObject([error])).toEqual({});
+  });
+
+  it('maps nested validation error groups recursively', () => {
+    const error = {
+      property: 'parent',
+      children: [
+        {
+          property: 'child',
+          children: [{ property: 'leaf', constraints: { custom: 'Invalid leaf.' } }],
+        },
+      ],
+    } as unknown as ValidationError;
+
+    expect(ValidationUtil.mapValidationErrorsToObject([error])).toEqual({
+      parent: { child: { leaf: [{ name: 'custom', constraints: ['Invalid leaf.'] }] } },
+    });
+  });
 });
