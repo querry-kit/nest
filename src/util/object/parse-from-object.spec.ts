@@ -1,4 +1,4 @@
-import { parseFromObject, parseObjectProperties } from './parse-from-object';
+import { parseObjectProperties } from './parse-from-object';
 
 describe('parseObjectProperties', () => {
   it('returns null for null input', () => {
@@ -17,9 +17,5 @@ describe('parseObjectProperties', () => {
       user: { name: 'Ada' },
       count: 5,
     });
-  });
-
-  it('keeps parseFromObject as a backwards-compatible alias', () => {
-    expect(parseFromObject({ page: '1' })).toEqual(parseObjectProperties({ page: '1' }));
   });
 });
