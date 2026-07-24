@@ -1,4 +1,4 @@
-import { createFromPath, createObjectFromPath } from './create-from-path';
+import { createObjectFromPath } from './create-from-path';
 
 describe('createObjectFromPath', () => {
   it('creates a flat object for a flat path', () => {
@@ -9,9 +9,5 @@ describe('createObjectFromPath', () => {
     expect(createObjectFromPath('user.profile.name', 'Ada')).toEqual({
       user: { profile: { name: 'Ada' } },
     });
-  });
-
-  it('keeps createFromPath as a backwards-compatible alias', () => {
-    expect(createFromPath('page.current', 1)).toEqual(createObjectFromPath('page.current', 1));
   });
 });

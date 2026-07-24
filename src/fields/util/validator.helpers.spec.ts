@@ -1,4 +1,4 @@
-import { createRelationSchemaNode, type FieldSchema } from '../index';
+import { relation, type FieldSchema } from '../index';
 import {
   fieldsValidationBadRequest,
   getIncludeChild,
@@ -9,7 +9,7 @@ import {
 describe('fields validator helpers', () => {
   const schema: FieldSchema = {
     id: true,
-    profile: createRelationSchemaNode({ id: true }),
+    profile: relation({ id: true }),
   };
 
   it('normalizes include values and relation checks', () => {

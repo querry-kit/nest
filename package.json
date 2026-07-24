@@ -89,12 +89,6 @@
       "require": "./dist/casl.cjs",
       "default": "./dist/casl.js"
     },
-    "./swagger": {
-      "types": "./dist/decorators.d.ts",
-      "import": "./dist/decorators.js",
-      "require": "./dist/decorators.cjs",
-      "default": "./dist/decorators.js"
-    },
     "./decorators": {
       "types": "./dist/decorators.d.ts",
       "import": "./dist/decorators.js",

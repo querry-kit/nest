@@ -1,4 +1,4 @@
-import { hasDifferences, hasObjectDifferences } from './has-differences';
+import { hasObjectDifferences } from './has-differences';
 
 describe('hasObjectDifferences', () => {
   it('returns false for identical primitives', () => {
@@ -32,9 +32,5 @@ describe('hasObjectDifferences', () => {
         () => 'a',
       ),
     ).toBe(true);
-  });
-
-  it('keeps hasDifferences as a backwards-compatible alias', () => {
-    expect(hasDifferences({ page: 1 }, { page: 2 })).toBe(hasObjectDifferences({ page: 1 }, { page: 2 }));
   });
 });

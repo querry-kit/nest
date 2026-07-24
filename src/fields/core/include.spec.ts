@@ -1,15 +1,15 @@
-import { createRelationSchemaNode, Fields, FieldSchema } from '../index';
+import { Fields, FieldSchema, relation } from '../index';
 
 describe('Fields.include', () => {
   const schema: FieldSchema = {
     id: true,
-    profile: createRelationSchemaNode({
+    profile: relation({
       id: true,
-      avatar: createRelationSchemaNode({
+      avatar: relation({
         id: true,
-        file: createRelationSchemaNode({ id: true }),
+        file: relation({ id: true }),
       }),
-      settings: createRelationSchemaNode({ id: true }),
+      settings: relation({ id: true }),
     }),
   };
 

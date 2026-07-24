@@ -38,8 +38,6 @@ describe('public API', () => {
       'ValidationUtil',
       'buildFieldSchemaFromDto',
       'createCaslAccessibleWhere',
-      'createFromPath',
-      'createRelationSchemaNode',
       'diffObjects',
       'filterCaslFields',
       'getDtoFields',

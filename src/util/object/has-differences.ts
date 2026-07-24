@@ -28,15 +28,3 @@ export function hasObjectDifferences(a: unknown, b: unknown): boolean {
 
   return true;
 }
-
-/**
- * Checks recursively if two values differ.
- *
- * @deprecated Use `hasObjectDifferences` for clearer object utility imports.
- * @param {unknown} a The first value.
- * @param {unknown} b The second value.
- * @returns {boolean} `true` if the values differ; `false` otherwise.
- */
-export function hasDifferences(a: unknown, b: unknown): boolean {
-  return hasObjectDifferences(a, b);
-}

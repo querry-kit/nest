@@ -4,7 +4,7 @@ export { buildFieldSchemaFromDto, getDtoFields } from './core/dto-schema';
 export { Fields } from './core/fields';
 export { FieldsParser } from './core/parser';
 export { FieldsProjector } from './core/projector';
-export { createRelationSchemaNode, relation } from './core/schema';
+export { relation } from './core/schema';
 export { FieldsValidator } from './core/validator';
 export { FieldsQuery } from './fields-query.decorator';
 export { FieldsExceptionFilter } from './filters/exception.filter';

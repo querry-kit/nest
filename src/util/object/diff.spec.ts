@@ -1,4 +1,4 @@
-import { diff, diffObjects } from './diff';
+import { diffObjects } from './diff';
 
 describe('diffObjects', () => {
   it('returns empty object for identical objects', () => {
@@ -33,9 +33,5 @@ describe('diffObjects', () => {
     const result = diffObjects({ name: 'John', age: 30 }, { name: 'John', age: 31 });
     expect(result).not.toHaveProperty('name');
     expect(result).toHaveProperty('age');
-  });
-
-  it('keeps diff as a backwards-compatible alias', () => {
-    expect(diff({ page: 1 }, { page: 2 })).toEqual(diffObjects({ page: 1 }, { page: 2 }));
   });
 });
