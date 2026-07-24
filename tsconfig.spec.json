@@ -4,7 +4,7 @@
 		"declaration": false,
 		"declarationMap": false,
 		"noEmit": true,
-		"sourceMap": false
+		"sourceMap": true
 	},
 	"include": ["src/**/*.ts"]
 }

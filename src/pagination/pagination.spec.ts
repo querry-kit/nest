@@ -54,4 +54,16 @@ describe('pagination DTOs', () => {
       meta,
     });
   });
+
+  it('keeps Swagger response type factories executable', () => {
+    const itemsMetadata = Reflect.getMetadata('swagger/apiModelProperties', PaginatedDTO.prototype, 'items') as {
+      type: () => unknown;
+    };
+    const metaMetadata = Reflect.getMetadata('swagger/apiModelProperties', PaginatedDTO.prototype, 'meta') as {
+      type: () => unknown;
+    };
+
+    expect(itemsMetadata.type()).toEqual([Object]);
+    expect(metaMetadata.type()).toBe(PageMetaDTO);
+  });
 });

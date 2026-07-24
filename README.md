@@ -12,17 +12,16 @@
 [![test](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/test.yml?branch=main&label=test&logo=jest&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/test.yml)
 [![coverage](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/test.yml?branch=main&label=coverage&logo=jest&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/test.yml)
 [![lint](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/lint.yml?branch=main&label=lint&logo=eslint&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/lint.yml)
-[![docs](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/docs.yml?branch=main&label=docs&logo=vitepress&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/docs.yml)
 [![changesets](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/changesets.yml?branch=main&label=changesets&logo=changesets&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/changesets.yml)
 [![npm publish](https://img.shields.io/github/actions/workflow/status/querry-kit/nest/release.yml?branch=main&label=npm%20publish&logo=githubactions&logoColor=white&style=for-the-badge)](https://github.com/querry-kit/nest/actions/workflows/release.yml)
 
 Consolidated NestJS helpers for Query Kit APIs: fields projection, Prisma-style query services, CASL policies, OpenAPI decorators, pipes, pagination DTOs, and object utilities.
 
-📖 Documentation: https://querry-kit.github.io/nest/
+📖 Documentation: [Querry Kit Nest documentation](https://querry-kit.github.io/querry-kit/docs/nest)
 
 ## 🌐 Querry Kit Ecosystem
 
-The [Querry Kit overview](https://querry-kit.github.io/querry-kit/) connects the three core packages and the Workboard reference application:
+The [Querry Kit overview](https://querry-kit.github.io/querry-kit/) connects the three core packages:
 
 - [`@querry-kit/nest`](https://github.com/querry-kit/nest) provides the NestJS API and controller patterns.
 - [`@querry-kit/nuxt`](https://github.com/querry-kit/nuxt) provides typed API clients and headless Vue/Nuxt data primitives.
@@ -36,7 +35,6 @@ The [Querry Kit overview](https://querry-kit.github.io/querry-kit/) connects the
 - [🧩 Usage](#-usage)
 - [🔐 CASL](#-casl)
 - [🎯 Fields](#-fields)
-- [🧪 Example API](#-example-api)
 - [📖 Documentation](#-documentation)
 - [🛠 Development](#-development)
 
@@ -63,7 +61,7 @@ pnpm add github:querry-kit/nest#v0.0.1
 
 ## 🚀 Release Workflow
 
-Releases are driven by Changesets and GitHub Actions. The `main` branch does not contain committed `dist` files; it only contains source, documentation, examples, and workflow configuration.
+Releases are driven by Changesets and GitHub Actions. The `main` branch does not contain committed `dist` files; it only contains source, the README, and workflow configuration.
 
 Package-visible changes should include a changeset:
 
@@ -204,38 +202,17 @@ return {
 };
 ```
 
-## 🧪 Example API
-
-A small in-memory NestJS example lives in [`examples/books-api`](examples/books-api/). It uses books and authors to show relation includes, fields projection, pagination metadata, CASL-aware controller flow, query transformation, and OpenAPI documentation.
-
-```sh
-pnpm examples:check
-pnpm examples:build
-```
-
 ## 📖 Documentation
 
-- [Getting Started](https://querry-kit.github.io/nest/guide/getting-started)
-- [Example App](https://querry-kit.github.io/nest/guide/example-app)
-- [CRUD Controller](https://querry-kit.github.io/nest/guide/crud-controller)
-- [Fields](https://querry-kit.github.io/nest/api/fields/)
-- [Query Service](https://querry-kit.github.io/nest/api/query-service)
-- [DTOs and Pagination](https://querry-kit.github.io/nest/api/dtos-pagination)
-- [OpenAPI Decorators](https://querry-kit.github.io/nest/api/openapi)
-- [CASL](https://querry-kit.github.io/nest/api/casl)
-- [API Reference](https://querry-kit.github.io/nest/api/)
-
-Run the VitePress documentation locally:
-
-```sh
-pnpm docs:dev
-```
-
-Build the documentation:
-
-```sh
-pnpm docs:build
-```
+- [Getting Started](https://querry-kit.github.io/querry-kit/docs/nest/guide/getting-started)
+- [Complete API Example](https://querry-kit.github.io/querry-kit/docs/nest/guide/example-app)
+- [CRUD Controller](https://querry-kit.github.io/querry-kit/docs/nest/guide/crud-controller)
+- [Fields](https://querry-kit.github.io/querry-kit/docs/nest/api/fields/)
+- [Query Service](https://querry-kit.github.io/querry-kit/docs/nest/api/query-service)
+- [DTOs and Pagination](https://querry-kit.github.io/querry-kit/docs/nest/api/dtos-pagination)
+- [OpenAPI Decorators](https://querry-kit.github.io/querry-kit/docs/nest/api/openapi)
+- [CASL](https://querry-kit.github.io/querry-kit/docs/nest/api/casl)
+- [API Reference](https://querry-kit.github.io/querry-kit/docs/nest/api/)
 
 ## 🛠 Development
 
@@ -246,9 +223,6 @@ pnpm check
 pnpm test
 pnpm test:coverage
 pnpm build
-pnpm examples:check
-pnpm examples:build
-pnpm docs:build
 ```
 
 `pnpm test:coverage` collects all source files, prints the coverage summary, and writes HTML and LCOV reports to `coverage/`. GitHub Actions runs the same command and retains the report as a workflow artifact.

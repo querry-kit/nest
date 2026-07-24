@@ -60,7 +60,7 @@ function resolvePropertyType(dtoClass: DtoClass, field: string): unknown {
  * @returns {boolean} `true` when the value has Swagger property metadata.
  */
 function isDtoClass(value: unknown): value is DtoClass {
-  if (typeof value !== 'function') {
+  if (typeof value !== 'function' || !value.prototype) {
     return false;
   }
 

@@ -18,7 +18,7 @@
     "typescript"
   ],
   "license": "MIT",
-  "homepage": "https://querry-kit.github.io/nest/",
+  "homepage": "https://querry-kit.github.io/querry-kit/docs/nest/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/querry-kit/nest.git"
@@ -116,13 +116,7 @@
     "lint:fix": "eslint . --fix",
     "test": "jest --config ./jest.config.cjs",
     "test:coverage": "jest --config ./jest.config.cjs --coverage",
-    "test:watch": "jest --config ./jest.config.cjs --watch",
-    "examples:check": "tsc -p examples/books-api/tsconfig.json --noEmit",
-    "examples:build": "tsc -p examples/books-api/tsconfig.build.json",
-    "examples:start": "pnpm build && pnpm examples:build && node examples/books-api/dist/examples/books-api/src/main.js",
-    "docs:dev": "pnpm --filter docs dev",
-    "docs:build": "pnpm --filter docs build",
-    "docs:preview": "pnpm --filter docs preview"
+    "test:watch": "jest --config ./jest.config.cjs --watch"
   },
   "peerDependencies": {
     "@casl/ability": "^6.7.3 || ^7.0.0",

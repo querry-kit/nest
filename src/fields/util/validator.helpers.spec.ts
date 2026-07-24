@@ -16,6 +16,7 @@ describe('fields validator helpers', () => {
     expect(getIncludeChild('invalid', 'profile')).toBeUndefined();
     expect(getIncludeChild({ profile: true }, 'profile')).toBe(true);
     expect(getNestedIncludeContext(true)).toBe(true);
+    expect(getNestedIncludeContext(null)).toBeUndefined();
     expect(getNestedIncludeContext({ include: { profile: true } })).toEqual({ profile: true });
     expect(getNestedIncludeContext({ include: 'invalid' })).toEqual({ include: 'invalid' });
     expect(hasNestedRelationSelection({ id: true }, schema)).toBe(false);

@@ -33,6 +33,12 @@ class NoMetadataDto {
   id!: string;
 }
 
+class MetadataEdgeCasesDto {
+  throwing!: unknown;
+  nested!: ProfileDto;
+  fallback!: number;
+}
+
 describe('DTO field schema', () => {
   it('creates manual relation schema nodes through the relation alias', () => {
     expect(relation({ id: true })).toEqual(createRelationSchemaNode({ id: true }));
@@ -59,6 +65,40 @@ describe('DTO field schema', () => {
         id: true,
         parent: createRelationSchemaNode({}),
       }),
+    });
+  });
+
+  it('handles malformed and alternative Swagger property metadata', () => {
+    Reflect.defineMetadata('swagger/apiModelPropertiesArray', 'invalid', NoMetadataDto.prototype);
+    expect(getDtoFields(NoMetadataDto)).toEqual([]);
+
+    Reflect.defineMetadata(
+      'swagger/apiModelPropertiesArray',
+      [':throwing', ':nested', ':fallback'],
+      MetadataEdgeCasesDto.prototype,
+    );
+    Reflect.defineMetadata(
+      'swagger/apiModelProperties',
+      {
+        type: () => {
+          throw new Error('unresolvable Swagger type');
+        },
+      },
+      MetadataEdgeCasesDto.prototype,
+      'throwing',
+    );
+    Reflect.defineMetadata(
+      'swagger/apiModelProperties',
+      { type: [ProfileDto] },
+      MetadataEdgeCasesDto.prototype,
+      'nested',
+    );
+    Reflect.defineMetadata('design:type', Number, MetadataEdgeCasesDto.prototype, 'fallback');
+
+    expect(buildFieldSchemaFromDto(MetadataEdgeCasesDto)).toEqual({
+      throwing: true,
+      nested: createRelationSchemaNode({ id: true, firstName: true }),
+      fallback: true,
     });
   });
 });

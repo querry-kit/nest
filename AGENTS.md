@@ -13,7 +13,7 @@
 
 - Create a Changeset for every commit, including repository maintenance commits.
 - Every committed change must include a Changeset and an appropriate documentation update. Do not create commits for local, temporary, or generated-only work.
-- Public API, runtime behavior, package metadata, README, and published documentation changes must update the affected README, VitePress pages, and JSDoc where applicable. Internal changes must update the relevant developer documentation.
+- Public API, runtime behavior, package metadata, README, and published documentation changes must update the affected README, central Querry Kit documentation, and JSDoc where applicable. Internal changes must update the relevant developer documentation.
 - Use the smallest correct SemVer bump:
   - `patch` for fixes, documentation improvements that affect published package metadata, and non-breaking internal improvements.
   - `minor` for new backwards-compatible features.
@@ -27,7 +27,7 @@
 - Do not remove, rename, or change public exports without a `major` Changeset and a migration note.
 - Additive exports are usually `minor` changes.
 - Bug fixes and documentation-only improvements are usually `patch` changes.
-- Keep README, VitePress docs, JSDoc, and tests aligned with public API behavior.
+- Keep README, central Querry Kit documentation, JSDoc, and tests aligned with public API behavior.
 
 ## TypeScript Guidelines
 
@@ -40,7 +40,7 @@
 - Keep public APIs stable and documented.
 - Prefer `unknown` over `any` for new implementation code unless the function intentionally accepts or returns any JavaScript value.
 - Avoid broad rewrites when a targeted change is enough.
-- Keep domain-specific examples in `examples/` dependency-light and runnable without external services unless the task explicitly asks for integration infrastructure.
+- Keep domain-specific examples in the central documentation dependency-light and practical unless the task explicitly asks for integration infrastructure.
 
 ## JSDoc Guidelines
 
@@ -87,17 +87,12 @@ node --input-type=module -e "import { parseObject } from '@querry-kit/nest/objec
 node -e "const { parseObject } = require('@querry-kit/nest/object'); console.log(parseObject({ page: '1' }))"
 ```
 
-- For documentation changes that affect VitePress, run:
+- For central documentation changes, run the matching checks in `/mnt/projects/querry-kit/querry-kit`:
 
 ```sh
-pnpm docs:build
-```
-
-- For example app changes, run:
-
-```sh
-pnpm examples:check
-pnpm examples:build
+pnpm docs:lint
+pnpm docs:typecheck
+pnpm docs:test
 ```
 
 - For workflow changes, validate the YAML structure and run the equivalent local package commands where possible.
@@ -122,7 +117,7 @@ pnpm examples:build
 
 ## Documentation
 
-- Every committed change needs documentation appropriate to its audience and scope. Keep README and VitePress docs aligned when behavior, installation, release, examples, or development workflows change, and update developer documentation for internal changes.
+- Every committed change needs documentation appropriate to its audience and scope. Keep README and central Querry Kit documentation aligned when behavior, installation, release, examples, or development workflows change, and update developer documentation for internal changes.
 - Developer documentation should be available in English by default for Query Kit packages.
 - Prefer examples that match the published package name:
 
@@ -132,5 +127,5 @@ import { Fields } from '@querry-kit/nest/fields';
 import { parseObject } from '@querry-kit/nest/object';
 ```
 
-- Keep documentation examples practical and close to the included `examples/books-api` app when possible.
-- For VitePress changes, keep navigation, sidebar entries, and linked pages in sync.
+- Keep documentation examples practical and close to the central complete API example when possible.
+- For central documentation changes, keep navigation, sidebar entries, and linked pages in sync.

@@ -31,6 +31,10 @@ describe('FieldsValidator', () => {
 
   it('validates include requirements for selected relations', () => {
     expect(() =>
+      FieldsValidator.validateIncludeRequirements({ profile: true }, schema, { profile: true }),
+    ).not.toThrow();
+
+    expect(() =>
       FieldsValidator.validateIncludeRequirements({ profile: { firstName: true } }, schema, { profile: true }),
     ).not.toThrow();
 
