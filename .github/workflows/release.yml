@@ -46,7 +46,6 @@ jobs:
           pnpm build
           pnpm test
           pnpm lint
-          pnpm docs:build
 
       - name: Resolve release version
         id: version

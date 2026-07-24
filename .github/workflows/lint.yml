@@ -9,7 +9,6 @@ on:
       - CHANGELOG.md
       - .changeset/**
       - .github/ISSUE_TEMPLATE/**
-      - docs/**
   pull_request:
     paths-ignore:
       - README.md
@@ -17,7 +16,6 @@ on:
       - CHANGELOG.md
       - .changeset/**
       - .github/ISSUE_TEMPLATE/**
-      - docs/**
   workflow_dispatch:
 
 concurrency:

@@ -3,9 +3,6 @@ dist
 .temp
 .vitepress/cache
 .vitepress/dist
-docs/.vitepress/.temp
-docs/.vitepress/cache
-docs/.vitepress/dist
 coverage
 *.tsbuildinfo
 .DS_Store
