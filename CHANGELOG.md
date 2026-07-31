@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 1.0.1
+
+### Patch Changes
+
+- 60151de: Add security reporting and repository maintenance configuration.
+
 ## 1.0.0
 
 ### Major Changes
