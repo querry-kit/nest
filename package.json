@@ -1,6 +1,6 @@
 {
   "name": "@querry-kit/nest",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Consolidated NestJS helpers for Query Kit fields, Prisma-style query services, CASL policies, decorators, pipes, and response projection.",
   "keywords": [
     "nestjs",

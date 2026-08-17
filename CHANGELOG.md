@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 1.0.2
+
+### Patch Changes
+
+- 8066ee0: Update transitive dependencies to resolve security alerts.
+
 ## 1.0.1
 
 ### Patch Changes
