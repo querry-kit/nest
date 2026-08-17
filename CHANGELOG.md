@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 1.0.3
+
+### Patch Changes
+
+- b4f448c: Keep the central documentation changelog in sync after releases.
+
 ## 1.0.2
 
 ### Patch Changes
