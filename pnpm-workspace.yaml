@@ -4,6 +4,10 @@ packages:
 nodeVersion: 24.18.0
 minimumReleaseAge: 1440
 
+overrides:
+  esbuild@0.27.7: 0.28.2
+  js-yaml@5.2.1: 5.2.2
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@prisma/client'
