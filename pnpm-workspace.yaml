@@ -17,6 +17,7 @@ onlyBuiltDependencies:
   - 'esbuild'
 
 allowBuilds:
+  '@parcel/watcher': true
   '@prisma/client': true
   '@scarf/scarf': true
   esbuild: true
