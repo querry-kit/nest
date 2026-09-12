@@ -1,5 +1,14 @@
 # @querry-kit/nest
 
+## 1.0.4
+
+### Patch Changes
+
+- 79303a0: Install Prettier directly so Changesets can format release changelogs in CI.
+- 4baa41f: Fix the Changesets v2 workflow input so release pull requests can be created and updated again.
+- 57078e8: Resolve vulnerable transitive YAML and multipart parser versions.
+- b7448fc: Update Jest to 30.5.1 and keep clean CI installs compatible with its watcher dependency.
+
 ## 1.0.3
 
 ### Patch Changes
