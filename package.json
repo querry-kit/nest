@@ -115,9 +115,9 @@
   "peerDependencies": {
     "@casl/ability": "^6.7.3 || ^7.0.0",
     "@casl/prisma": "^1.5.2 || ^2.0.0",
-    "@nestjs/common": "^11.1.28",
-    "@nestjs/core": "^11.1.28",
-    "@nestjs/swagger": "^11.4.6",
+    "@nestjs/common": "^11.1.28 || ^12.0.1",
+    "@nestjs/core": "^11.1.28 || ^12.0.1",
+    "@nestjs/swagger": "^11.4.6 || ^12.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "reflect-metadata": "^0.2.2"
@@ -131,32 +131,32 @@
     }
   },
   "dependencies": {
-    "qs": "^6.15.3"
+    "qs": "^6.16.0"
   },
   "devDependencies": {
-    "@casl/ability": "^6.7.3",
-    "@casl/prisma": "1.5.2",
-    "@changesets/cli": "^3.0.0",
-    "@jest/types": "^30.4.1",
-    "@nestjs/common": "^11.1.28",
-    "@nestjs/core": "^11.1.28",
-    "@nestjs/platform-express": "^11.1.28",
-    "@nestjs/swagger": "^11.4.6",
+    "@casl/ability": "^7.0.1",
+    "@casl/prisma": "^2.0.2",
+    "@changesets/cli": "^3.0.2",
+    "@jest/types": "^30.5.1",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/platform-express": "^12.0.1",
+    "@nestjs/swagger": "^12.0.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.5.1",
     "@types/qs": "^6.15.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
-    "eslint": "^10.7.0",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "jest": "^30.5.1",
     "prettier": "^3.9.6",
     "prettier-plugin-organize-imports": "^4.3.0",
     "reflect-metadata": "^0.2.2",
-    "ts-jest": "^29.4.11",
+    "ts-jest": "^29.4.12",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.69.0"
+    "typescript-eslint": "^8.70.0"
   }
 }
