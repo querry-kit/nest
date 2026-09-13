@@ -1,15 +1,16 @@
 const mockApplyDecorators = jest.fn((...decorators) => decorators);
 const mockApiProperty = jest.fn((options) => ({ type: 'property', value: options }));
 
-jest.mock('@nestjs/common', () => {
-  const actual = jest.requireActual('@nestjs/common');
+const actualNestCommon = await import('@nestjs/common');
+
+jest.unstable_mockModule('@nestjs/common', () => {
   return {
-    ...actual,
+    ...actualNestCommon,
     applyDecorators: mockApplyDecorators,
   };
 });
 
-jest.mock('@nestjs/swagger', () => ({
+jest.unstable_mockModule('@nestjs/swagger', () => ({
   ApiProperty: mockApiProperty,
 }));
 
@@ -22,7 +23,7 @@ Object.defineProperty(globalThis, 'crypto', {
   },
 });
 
-import { ApiPropertyId } from './api-property-id.decorator';
+const { ApiPropertyId } = await import('./api-property-id.decorator.js');
 
 describe('ApiPropertyId decorator', () => {
   beforeEach(() => {

@@ -6,7 +6,7 @@ const mockApiProperty = jest.fn(() => jest.fn());
 const mockApiPropertyOptional = jest.fn(() => jest.fn());
 const mockGetSchemaPath = jest.fn((model: { name: string }) => `#/components/schemas/${model.name}`);
 
-jest.mock('@nestjs/swagger', () => ({
+jest.unstable_mockModule('@nestjs/swagger', () => ({
   ApiExtraModels: mockApiExtraModels,
   ApiOkResponse: mockApiOkResponse,
   ApiProperty: mockApiProperty,
@@ -14,8 +14,8 @@ jest.mock('@nestjs/swagger', () => ({
   getSchemaPath: mockGetSchemaPath,
 }));
 
-import { PageMetaDTO, PaginatedDTO } from '../../pagination/index.js';
-import { ApiPaginatedResponse } from './api-paginated-response.decorator.js';
+const { PageMetaDTO, PaginatedDTO } = await import('../../pagination/index.js');
+const { ApiPaginatedResponse } = await import('./api-paginated-response.decorator.js');
 
 class BookDTO {}
 

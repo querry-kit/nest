@@ -108,9 +108,9 @@
     "build": "tsup",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --config ./jest.config.cjs",
-    "test:coverage": "jest --config ./jest.config.cjs --coverage",
-    "test:watch": "jest --config ./jest.config.cjs --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs --coverage",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs --watch"
   },
   "peerDependencies": {
     "@casl/ability": "^6.7.3 || ^7.0.0",

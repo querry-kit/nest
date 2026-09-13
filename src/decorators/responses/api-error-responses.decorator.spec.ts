@@ -28,15 +28,16 @@ const mockApiInternalServerErrorResponse = jest.fn((options) => ({
   options,
 }));
 
-jest.mock('@nestjs/common', () => {
-  const actual = jest.requireActual('@nestjs/common');
+const actualNestCommon = await import('@nestjs/common');
+
+jest.unstable_mockModule('@nestjs/common', () => {
   return {
-    ...actual,
+    ...actualNestCommon,
     applyDecorators: mockApplyDecorators,
   };
 });
 
-jest.mock('@nestjs/swagger', () => ({
+jest.unstable_mockModule('@nestjs/swagger', () => ({
   ApiBadRequestResponse: mockApiBadRequestResponse,
   ApiUnauthorizedResponse: mockApiUnauthorizedResponse,
   ApiForbiddenResponse: mockApiForbiddenResponse,
@@ -46,8 +47,8 @@ jest.mock('@nestjs/swagger', () => ({
   ApiInternalServerErrorResponse: mockApiInternalServerErrorResponse,
 }));
 
-import { HttpStatus } from '@nestjs/common';
-import { ApiErrorResponses } from './api-error-responses.decorator';
+const { HttpStatus } = actualNestCommon;
+const { ApiErrorResponses } = await import('./api-error-responses.decorator.js');
 
 describe('ApiErrorResponses decorator', () => {
   beforeEach(() => {
