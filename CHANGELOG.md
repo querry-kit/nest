@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 1.0.5
+
+### Patch Changes
+
+- 96ac5df: Add NestJS 12 and CASL Prisma 2 compatibility.
+
 ## 1.0.4
 
 ### Patch Changes
