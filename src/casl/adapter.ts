@@ -22,7 +22,10 @@ export function createCaslAccessibleWhere<TAbility = AnyAbility, TSubject = stri
   const action = options.action ?? ('read' as TAction);
 
   return (ability, subject) => {
-    const records = (accessibleBy as (ability: unknown, action: unknown) => AccessibleRecordsLike)(ability, action);
+    const records = (accessibleBy as unknown as (ability: unknown, action: unknown) => AccessibleRecordsLike)(
+      ability,
+      action,
+    );
     let ofType: AccessibleRecordsLike['ofType'];
 
     try {

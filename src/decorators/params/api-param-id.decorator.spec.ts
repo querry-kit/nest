@@ -1,19 +1,20 @@
 const mockApplyDecorators = jest.fn((...decorators) => decorators);
 const mockApiParam = jest.fn((options) => ({ type: 'param', value: options }));
 
-jest.mock('@nestjs/common', () => {
-  const actual = jest.requireActual('@nestjs/common');
+const actualNestCommon = await import('@nestjs/common');
+
+jest.unstable_mockModule('@nestjs/common', () => {
   return {
-    ...actual,
+    ...actualNestCommon,
     applyDecorators: mockApplyDecorators,
   };
 });
 
-jest.mock('@nestjs/swagger', () => ({
+jest.unstable_mockModule('@nestjs/swagger', () => ({
   ApiParam: mockApiParam,
 }));
 
-import { ApiParamId } from './api-param-id.decorator';
+const { ApiParamId } = await import('./api-param-id.decorator.js');
 
 describe('ApiParamId decorator', () => {
   beforeEach(() => {
