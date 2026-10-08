@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 1.0.6
+
+### Patch Changes
+
+- b966a57: Resolve vulnerable transitive development dependencies.
+
 ## 1.0.5
 
 ### Patch Changes
