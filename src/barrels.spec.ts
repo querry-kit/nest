@@ -1,4 +1,5 @@
 import * as Casl from './casl';
+import * as Core from './core/index.js';
 import * as Decorators from './decorators';
 import * as Params from './decorators/params';
 import * as Properties from './decorators/properties';
@@ -16,6 +17,7 @@ import * as QueryUtil from './util/query';
 describe('module barrels', () => {
   it('expose their documented runtime helpers', () => {
     for (const module of [
+      Core,
       Casl,
       Decorators,
       Params,

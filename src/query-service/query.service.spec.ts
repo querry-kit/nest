@@ -1,4 +1,6 @@
 import { BadRequestException, HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { QueryService as CoreQueryService } from '../core/query.service.js';
+import { PageMetaDTO } from '../pagination/page-meta.dto.js';
 import { QueryService } from './query.service.js';
 
 class TestDelegate {
@@ -65,7 +67,7 @@ class TestDelegate {
   }
 }
 
-describe('QueryService', () => {
+describe.each([QueryService, CoreQueryService])('QueryService %p', (QueryService) => {
   it('finds one record and parses query options', async () => {
     const delegate = new TestDelegate();
     const service = new QueryService(delegate);
@@ -303,5 +305,13 @@ describe('QueryService', () => {
     delegate.fail = error;
 
     await expect(service.query({ page: 1, perPage: 10 } as never)).rejects.toBe(error);
+  });
+});
+
+describe('legacy query service metadata', () => {
+  it('retains decorated PageMetaDTO instances', async () => {
+    const result = await new QueryService(new TestDelegate()).query({ page: 1, perPage: 10 });
+
+    expect(result.pageMeta).toBeInstanceOf(PageMetaDTO);
   });
 });

@@ -1,8 +1,10 @@
+import { ResourceQuery as CoreResourceQuery } from './core/resource-query.js';
 import { relation, type FieldSchema } from './fields/index';
 import { PageMetaDTO } from './pagination/page-meta.dto';
+import { PaginatedDTO } from './pagination/paginated.dto.js';
 import { ResourceQuery } from './resource-query';
 
-describe('ResourceQuery', () => {
+describe.each([ResourceQuery, CoreResourceQuery])('ResourceQuery %p', (ResourceQuery) => {
   const schema: FieldSchema = {
     id: true,
     name: true,
@@ -174,5 +176,25 @@ describe('ResourceQuery', () => {
         map: (item: { id: string; name: string }) => item,
       }),
     ).resolves.toEqual({});
+  });
+});
+
+describe('legacy resource query responses', () => {
+  it('retains decorated PaginatedDTO instances', async () => {
+    const service = {
+      query: jest.fn().mockResolvedValue({
+        items: [],
+        pageMeta: new PageMetaDTO({ itemCount: 0, pageOptions: { page: 1, perPage: 10 } }),
+      }),
+      findById: jest.fn(),
+    };
+    const result = await ResourceQuery.query({
+      service,
+      query: {},
+      schema: { id: true },
+      map: (item: unknown) => item,
+    });
+
+    expect(result).toBeInstanceOf(PaginatedDTO);
   });
 });
