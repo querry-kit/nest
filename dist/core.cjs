@@ -1,0 +1,1336 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __decorateClass = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp(target, key, result);
+  return result;
+};
+
+// src/core/index.ts
+var core_exports = {};
+__export(core_exports, {
+  ApiFieldsQuery: () => ApiFieldsQuery,
+  EmptyStringToNullPipe: () => EmptyStringToNullPipe,
+  Fields: () => Fields,
+  FieldsBadRequestException: () => FieldsBadRequestException,
+  FieldsExceptionFilter: () => FieldsExceptionFilter,
+  FieldsParser: () => FieldsParser,
+  FieldsProjector: () => FieldsProjector,
+  FieldsQuery: () => FieldsQuery,
+  FieldsValidator: () => FieldsValidator,
+  PageMeta: () => PageMeta,
+  QueryService: () => QueryService,
+  QueryTransformPipe: () => QueryTransformPipe,
+  ResourceQuery: () => ResourceQuery,
+  buildFieldSchemaFromDto: () => buildFieldSchemaFromDto,
+  createObjectFromPath: () => createObjectFromPath,
+  diffObjects: () => diffObjects,
+  getDtoFields: () => getDtoFields,
+  hasObjectDifferences: () => hasObjectDifferences,
+  isBoolean: () => isBoolean,
+  isDecimalLike: () => isDecimalLike,
+  isNumber: () => isNumber,
+  isObject: () => isObject,
+  isPlainObject: () => isPlainObject,
+  parseBoolean: () => parseBoolean,
+  parseObject: () => parseObject,
+  parseObjectProperties: () => parseObjectProperties,
+  parseQueryObject: () => parseQueryObject,
+  prepareFieldsQuery: () => prepareFieldsQuery,
+  relation: () => relation,
+  resolveFieldSchema: () => resolveFieldSchema,
+  serializeDecimalValues: () => serializeDecimalValues
+});
+module.exports = __toCommonJS(core_exports);
+
+// src/fields/api-fields-query.decorator.ts
+var import_common = require("@nestjs/common");
+var import_swagger = require("@nestjs/swagger");
+var defaultQueryDescription = "Comma-separated response field projection. Use nested selections with braces, for example `id,name,profile{email}`.";
+var defaultBadRequestDescription = "The `fields` query parameter is invalid.";
+function ApiFieldsQuery(options = {}) {
+  return (0, import_common.applyDecorators)(
+    (0, import_swagger.ApiQuery)({
+      name: "fields",
+      required: false,
+      type: String,
+      description: defaultQueryDescription,
+      ...options.query
+    }),
+    (0, import_swagger.ApiBadRequestResponse)({
+      description: defaultBadRequestDescription,
+      schema: {
+        type: "object",
+        required: ["statusCode", "message", "details"],
+        properties: {
+          statusCode: {
+            type: "number",
+            example: 400
+          },
+          message: {
+            type: "string",
+            example: "Invalid fields query parameter"
+          },
+          details: {
+            type: "string",
+            example: 'unknown field "name"'
+          },
+          path: {
+            type: "string",
+            example: "profile.name"
+          },
+          position: {
+            type: "number",
+            example: 8
+          }
+        }
+      },
+      ...options.badRequest
+    })
+  );
+}
+
+// src/fields/core/bad-request.exception.ts
+var import_common2 = require("@nestjs/common");
+var FieldsBadRequestException = class extends import_common2.BadRequestException {
+  /**
+   * Creates a structured fields bad request error.
+   *
+   * @param {FieldsBadRequestResponse} response The response body details.
+   */
+  constructor(response) {
+    super(response);
+  }
+};
+
+// src/fields/core/schema.ts
+function relation(fields) {
+  return { relation: true, fields };
+}
+function isRelationSchemaNode(node) {
+  return node !== true;
+}
+
+// src/fields/core/dto-schema.ts
+var SWAGGER_PROPERTIES_ARRAY = "swagger/apiModelPropertiesArray";
+var SWAGGER_PROPERTY = "swagger/apiModelProperties";
+function getDtoFields(dtoClass) {
+  const fields = Reflect.getMetadata?.(SWAGGER_PROPERTIES_ARRAY, dtoClass.prototype) ?? [];
+  if (!Array.isArray(fields)) {
+    return [];
+  }
+  return fields.filter((field) => typeof field === "string").map((field) => field.replace(":", ""));
+}
+function resolvePropertyType(dtoClass, field) {
+  const getMetadata = Reflect.getMetadata;
+  const swaggerProperty = getMetadata?.(SWAGGER_PROPERTY, dtoClass.prototype, field);
+  let resolvedType = swaggerProperty?.type;
+  if (typeof resolvedType === "function") {
+    try {
+      resolvedType = resolvedType();
+    } catch {
+    }
+  }
+  if (Array.isArray(resolvedType) && resolvedType.length === 1) {
+    resolvedType = resolvedType[0];
+  }
+  if (typeof resolvedType === "undefined") {
+    resolvedType = getMetadata?.("design:type", dtoClass.prototype, field);
+  }
+  return resolvedType;
+}
+function isDtoClass(value) {
+  if (typeof value !== "function" || !value.prototype) {
+    return false;
+  }
+  const fields = Reflect.getMetadata?.(SWAGGER_PROPERTIES_ARRAY, value.prototype);
+  return Array.isArray(fields) && fields.length > 0;
+}
+function buildFieldSchemaFromDto(dtoClass, visited = /* @__PURE__ */ new Set()) {
+  const schema = {};
+  for (const field of getDtoFields(dtoClass)) {
+    const fieldType = resolvePropertyType(dtoClass, field);
+    if (isDtoClass(fieldType)) {
+      if (visited.has(fieldType)) {
+        schema[field] = relation({});
+      } else {
+        const nextVisited = new Set(visited);
+        nextVisited.add(fieldType);
+        schema[field] = relation(buildFieldSchemaFromDto(fieldType, nextVisited));
+      }
+    } else {
+      schema[field] = true;
+    }
+  }
+  return schema;
+}
+
+// src/util/object/create-from-path.ts
+function createObjectFromPath(path, value) {
+  if (path.includes(".")) {
+    const [root] = path.split(".", 1);
+    const subpath = path.substring(path.indexOf(".") + 1);
+    return { [root]: createObjectFromPath(subpath, value) };
+  }
+  return { [path]: value };
+}
+
+// src/util/object/decimal.ts
+function serializeDecimalValues(value) {
+  if (value == null || typeof value !== "object") {
+    return value;
+  }
+  if (isDecimalLike(value)) {
+    return value.toNumber();
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => serializeDecimalValues(item));
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [key, serializeDecimalValues(item)])
+  );
+}
+function isDecimalLike(value) {
+  return value != null && typeof value === "object" && typeof value.toNumber === "function" && Object.prototype.toString.call(value) !== "[object Date]";
+}
+
+// src/util/object/diff.ts
+function diffObjects(a, b) {
+  const result = {};
+  const keys = /* @__PURE__ */ new Set([...Object.keys(a), ...Object.keys(b)]);
+  for (const key of keys) {
+    if (typeof a[key] === "object" && typeof b[key] === "object") {
+      const nested = diffObjects(a[key], b[key]);
+      if (Object.keys(nested).length) result[key] = nested;
+    } else if (a[key] !== b[key]) {
+      result[key] = { old: a[key], new: b[key] };
+    }
+  }
+  return result;
+}
+
+// src/util/object/is-plain-object.ts
+function isPlainObject(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+// src/util/object/has-differences.ts
+function hasObjectDifferences(a, b) {
+  if (Object.is(a, b)) return false;
+  if (typeof a !== typeof b) return true;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return true;
+    return a.some((value, i) => hasObjectDifferences(value, b[i]));
+  }
+  if (isPlainObject(a) && isPlainObject(b)) {
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+    if (keysA.length !== keysB.length) return true;
+    return keysA.some((key) => !(key in b) || hasObjectDifferences(a[key], b[key]));
+  }
+  return true;
+}
+
+// src/util/object/is-boolean.ts
+function isBoolean(obj) {
+  return typeof obj === "boolean" || obj === "true" || obj === "false" || obj === true || obj === false;
+}
+
+// src/util/object/is-number.ts
+function isNumber(obj) {
+  if (typeof obj === "number") return Number.isFinite(obj);
+  return typeof obj === "string" && obj.trim() !== "" && Number.isFinite(Number(obj));
+}
+
+// src/util/object/is-object.ts
+function isObject(obj) {
+  return typeof obj === "object";
+}
+
+// src/util/object/parse-boolean.ts
+function parseBoolean(value) {
+  switch (value) {
+    case true:
+    case "true":
+    case "on":
+    case "yes":
+      return true;
+    default:
+      return false;
+  }
+}
+
+// src/util/object/parse-from-object.ts
+function parseObjectProperties(obj) {
+  if (obj === null) return null;
+  const parsed = {};
+  for (const key of Object.keys(obj)) {
+    if (key.includes(".")) {
+      Object.assign(parsed, createObjectFromPath(key, parseObject(obj[key])));
+    } else {
+      parsed[key] = parseObject(obj[key]);
+    }
+  }
+  return parsed;
+}
+
+// src/util/object/parse.ts
+function parseObject(obj) {
+  if (obj === "null") {
+    return null;
+  }
+  if (typeof obj === "string") {
+    const trimmed = obj.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}") || trimmed.startsWith("[") && trimmed.endsWith("]")) {
+      try {
+        return parseObject(JSON.parse(trimmed));
+      } catch {
+        return obj;
+      }
+    }
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(parseObject);
+  } else if (isObject(obj)) {
+    return parseObjectProperties(obj);
+  } else if (isBoolean(obj)) {
+    return parseBoolean(obj);
+  } else if (isNumber(obj)) {
+    return Number(obj);
+  }
+  if (typeof obj === "undefined") {
+    return void 0;
+  }
+  return String(obj);
+}
+
+// src/fields/core/include.ts
+function mergeInclude(base, extension) {
+  const parsedBase = normalizeInclude(base);
+  const parsedExtension = normalizeInclude(extension);
+  if (!parsedBase) {
+    return parsedExtension;
+  }
+  if (!parsedExtension) {
+    return parsedBase;
+  }
+  return mergeIncludeObjects(parsedBase, parsedExtension);
+}
+function buildFieldsInclude(projection, schema, existing) {
+  const parsedExisting = parseObject(existing);
+  const current = parsedExisting && typeof parsedExisting === "object" && !Array.isArray(parsedExisting) ? parsedExisting : {};
+  const result = { ...current };
+  for (const key of Object.keys(projection)) {
+    const node = schema[key];
+    if (!node || !isRelationSchemaNode(node)) {
+      continue;
+    }
+    const selected = projection[key];
+    const nested = selected === true ? {} : buildFieldsInclude(selected, node.fields);
+    const generated = selected === true || Object.keys(nested).length === 0 ? true : { include: nested };
+    const configured = result[key];
+    if (configured && typeof configured === "object" && !Array.isArray(configured) && generated !== true) {
+      const configuredObject = configured;
+      if (typeof configuredObject.select === "object" && configuredObject.select !== null && !Array.isArray(configuredObject.select)) {
+        result[key] = {
+          ...configuredObject,
+          select: {
+            ...configuredObject.select,
+            ...generated.include
+          }
+        };
+        continue;
+      }
+      result[key] = {
+        ...configuredObject,
+        include: {
+          ...typeof configuredObject.include === "object" && configuredObject.include !== null && !Array.isArray(configuredObject.include) ? configuredObject.include : {},
+          ...generated.include
+        }
+      };
+    } else if (typeof configured === "undefined" || configured === true && generated !== true) {
+      result[key] = generated;
+    }
+  }
+  return result;
+}
+function normalizeInclude(include) {
+  const parsed = parseObject(include);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return void 0;
+  }
+  return parsed;
+}
+function mergeIncludeObjects(base, extension) {
+  const result = { ...base };
+  for (const [key, value] of Object.entries(extension)) {
+    const current = result[key];
+    if (isPlainIncludeObject(current) && isPlainIncludeObject(value)) {
+      result[key] = mergeIncludeObjects(current, value);
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+function isPlainIncludeObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+// src/fields/core/selection-parser.ts
+var FieldsSelectionParser = class {
+  /**
+   * Creates a parser for one raw `fields` string.
+   *
+   * @param {string} input The raw fields string.
+   */
+  constructor(input) {
+    this.input = input;
+  }
+  input;
+  pos = 0;
+  /**
+   * Parses the full input into a projection tree.
+   *
+   * @returns {FieldsProjection} The parsed projection tree.
+   * @throws {FieldsBadRequestException} If the syntax is invalid.
+   */
+  parse() {
+    if (this.input === "") {
+      return {};
+    }
+    this.skipWhitespace();
+    if (!this.hasMore()) {
+      throw this.error("fields cannot be empty");
+    }
+    const projection = this.peek() === "{" ? this.parseWrappedSelection() : this.parseSelectionList();
+    this.skipWhitespace();
+    if (this.hasMore()) {
+      throw this.error(`unexpected token "${this.peek()}"`);
+    }
+    return projection;
+  }
+  /**
+   * Parses a comma-separated selection list.
+   *
+   * @returns {FieldsProjection} The parsed selection set.
+   */
+  parseSelectionList(allowEmpty = false) {
+    const selection = {};
+    while (true) {
+      this.skipWhitespace();
+      if (!this.hasMore() || this.peek() === "}") {
+        break;
+      }
+      const fieldName = this.parseName();
+      this.skipWhitespace();
+      let child = true;
+      if (this.peek() === "{") {
+        this.consume("{");
+        child = this.parseSelectionList(true);
+        this.skipWhitespace();
+        this.consume("}");
+      }
+      const current = selection[fieldName];
+      if (typeof current === "undefined") {
+        selection[fieldName] = child;
+      } else if (current !== true && child !== true) {
+        selection[fieldName] = { ...current, ...child };
+      }
+      this.skipWhitespace();
+      if (this.peek() === ",") {
+        this.consume(",");
+        continue;
+      }
+      if (!this.hasMore() || this.peek() === "}") {
+        break;
+      }
+      throw this.error("expected comma or closing brace");
+    }
+    if (!allowEmpty && Object.keys(selection).length === 0) {
+      throw this.error("selection set cannot be empty");
+    }
+    return selection;
+  }
+  /**
+   * Parses an optional outer selection wrapper.
+   *
+   * @returns {FieldsProjection} The selection inside the outer braces.
+   */
+  parseWrappedSelection() {
+    this.consume("{");
+    const selection = this.parseSelectionList(true);
+    this.skipWhitespace();
+    this.consume("}");
+    return selection;
+  }
+  /**
+   * Parses one field identifier.
+   *
+   * @returns {string} The parsed field name.
+   */
+  parseName() {
+    if (!this.hasMore()) {
+      throw this.error("unexpected end of input while reading field name");
+    }
+    const start = this.pos;
+    const first = this.peek();
+    if (!/[A-Za-z_]/.test(first)) {
+      throw this.error(`invalid field start "${first}"`);
+    }
+    this.pos++;
+    while (this.hasMore() && /[A-Za-z0-9_]/.test(this.peek())) {
+      this.pos++;
+    }
+    return this.input.slice(start, this.pos);
+  }
+  /**
+   * Advances the parser position over whitespace.
+   *
+   * @returns {void}
+   */
+  skipWhitespace() {
+    while (this.hasMore() && /\s/.test(this.peek())) {
+      this.pos++;
+    }
+  }
+  /**
+   * Checks whether input remains.
+   *
+   * @returns {boolean} `true` when the parser has not reached the end.
+   */
+  hasMore() {
+    return this.pos < this.input.length;
+  }
+  /**
+   * Reads the current character without consuming it.
+   *
+   * @returns {string} The current character.
+   */
+  peek() {
+    return this.input[this.pos] ?? "";
+  }
+  /**
+   * Consumes an expected token.
+   *
+   * @param {string} ch The expected character to consume.
+   * @returns {void}
+   */
+  consume(ch) {
+    if (this.peek() !== ch) {
+      throw this.error(`expected "${ch}"`);
+    }
+    this.pos++;
+  }
+  /**
+   * Builds a standardized bad request exception.
+   *
+   * @param {string} details The parser error details.
+   * @returns {FieldsBadRequestException} The structured bad request exception.
+   */
+  error(details) {
+    return new FieldsBadRequestException({
+      message: "Invalid fields query parameter",
+      details,
+      position: this.pos
+    });
+  }
+};
+
+// src/fields/core/parser.ts
+var FieldsParser = class {
+  /**
+   * Parses a `fields` value into a projection tree.
+   *
+   * @param {unknown} value The raw `fields` query parameter value.
+   * @returns {FieldsProjection | undefined} The parsed projection tree, an empty projection for an explicit empty string, or `undefined` when omitted.
+   * @throws {FieldsBadRequestException} If the value type or syntax is invalid.
+   */
+  static parse(value) {
+    if (typeof value === "undefined" || value === null) {
+      return void 0;
+    }
+    if (typeof value !== "string") {
+      throw new FieldsBadRequestException({
+        message: "Invalid fields query parameter",
+        details: "fields must be a string"
+      });
+    }
+    return new FieldsSelectionParser(value).parse();
+  }
+};
+
+// src/fields/core/projector.ts
+var FieldsProjector = class {
+  /**
+   * Projects any source value to the requested shape.
+   *
+   * @param {T} value The source value to project.
+   * @param {FieldsProjection} [projection] The requested fields tree.
+   * @returns {T} The projected value.
+   */
+  static project(value, projection) {
+    if (!projection) {
+      return value;
+    }
+    return this.projectInternal(value, projection);
+  }
+  /**
+   * Recursively projects one value.
+   *
+   * @param {unknown} value The current source value.
+   * @param {FieldsProjection | true} projection The projection node.
+   * @returns {unknown} The projected value for the current node.
+   */
+  static projectInternal(value, projection) {
+    if (projection === true) {
+      return value;
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => this.projectInternal(item, projection));
+    }
+    if (value === null || typeof value === "undefined") {
+      return value;
+    }
+    if (typeof value !== "object") {
+      return value;
+    }
+    const source = value;
+    const out = {};
+    for (const key of Object.keys(projection)) {
+      out[key] = this.projectInternal(source[key], projection[key]);
+    }
+    return out;
+  }
+};
+
+// src/fields/util/validator.helpers.ts
+function fieldsValidationBadRequest(details, path) {
+  return new FieldsBadRequestException({
+    message: "Invalid fields query parameter",
+    details,
+    path
+  });
+}
+function getIncludeChild(include, key) {
+  if (!isPlainObject(include)) {
+    return void 0;
+  }
+  return include[key];
+}
+function hasNestedRelationSelection(projection, schema) {
+  for (const key of Object.keys(projection)) {
+    const projectionNode = projection[key];
+    const schemaNode = schema[key];
+    if (!schemaNode || !isRelationSchemaNode(schemaNode) || projectionNode === true) {
+      continue;
+    }
+    return true;
+  }
+  return false;
+}
+function getNestedIncludeContext(includeChild) {
+  if (includeChild === true) {
+    return true;
+  }
+  if (!isPlainObject(includeChild)) {
+    return void 0;
+  }
+  if (isPlainObject(includeChild.include)) {
+    return includeChild.include;
+  }
+  return includeChild;
+}
+
+// src/fields/core/validator.ts
+var FieldsValidator = class {
+  /**
+   * Validates field names and nesting against a schema.
+   *
+   * @param {FieldsProjection} projection The parsed fields projection.
+   * @param {FieldSchema} schema The allowed DTO schema.
+   * @param {string} [path] The internal traversal path.
+   * @returns {void}
+   * @throws {FieldsBadRequestException} If an unknown field or invalid nesting is used.
+   */
+  static validateProjection(projection, schema, path = "") {
+    for (const key of Object.keys(projection)) {
+      const node = schema[key];
+      const fieldPath = path ? `${path}.${key}` : key;
+      if (!node) {
+        throw fieldsValidationBadRequest(`unknown field "${key}"`, fieldPath);
+      }
+      const projectionNode = projection[key];
+      if (projectionNode !== true) {
+        if (!isRelationSchemaNode(node)) {
+          throw fieldsValidationBadRequest(`field "${key}" does not support nested selections`, fieldPath);
+        }
+        this.validateProjection(projectionNode, node.fields, fieldPath);
+      }
+    }
+  }
+  /**
+   * Ensures a projection only contains top-level fields.
+   *
+   * @param {FieldsProjection} projection The parsed fields projection.
+   * @returns {void}
+   * @throws {FieldsBadRequestException} If nested selections are present.
+   */
+  static validateNoNestedSelection(projection) {
+    for (const key of Object.keys(projection)) {
+      if (projection[key] !== true) {
+        throw fieldsValidationBadRequest(`nested selection is not supported on this endpoint (field "${key}")`, key);
+      }
+    }
+  }
+  /**
+   * Validates that selected relation fields are backed by explicit includes.
+   *
+   * @param {FieldsProjection} projection The parsed fields projection.
+   * @param {FieldSchema} schema The allowed DTO schema.
+   * @param {unknown} include The include query object.
+   * @param {string} [path] The internal traversal path.
+   * @returns {void}
+   * @throws {FieldsBadRequestException} If required include values are missing.
+   */
+  static validateIncludeRequirements(projection, schema, include, path = "") {
+    for (const key of Object.keys(projection)) {
+      const node = schema[key];
+      const projectionNode = projection[key];
+      if (!isRelationSchemaNode(node)) {
+        continue;
+      }
+      const fieldPath = path ? `${path}.${key}` : key;
+      const includeChild = getIncludeChild(include, key);
+      if (typeof includeChild === "undefined") {
+        throw fieldsValidationBadRequest(
+          `relation field "${fieldPath}" requires include (missing include.${fieldPath})`,
+          fieldPath
+        );
+      }
+      if (projectionNode === true) {
+        continue;
+      }
+      const nestedInclude = getNestedIncludeContext(includeChild);
+      if (nestedInclude === true && hasNestedRelationSelection(projectionNode, node.fields)) {
+        throw fieldsValidationBadRequest(
+          `nested relation selection for "${fieldPath}" requires explicit nested include`,
+          fieldPath
+        );
+      }
+      this.validateIncludeRequirements(
+        projectionNode,
+        node.fields,
+        nestedInclude === true ? void 0 : nestedInclude,
+        fieldPath
+      );
+    }
+  }
+};
+
+// src/fields/core/fields.ts
+var Fields = class {
+  /**
+   * Builds a Prisma-compatible include object from a validated projection.
+   *
+   * Existing include configuration is preserved and dotted query keys are
+   * normalized through the bundled object utilities.
+   *
+   * @param {FieldsProjection} projection The parsed fields projection.
+   * @param {FieldSchema} schema The allowed DTO schema.
+   * @param {unknown} [existing] The existing include query configuration.
+   * @returns {Record<string, unknown>} The merged include configuration.
+   */
+  static include(projection, schema, existing) {
+    return buildFieldsInclude(projection, schema, existing);
+  }
+  /**
+   * Parses and validates a raw `fields` value.
+   *
+   * @param {unknown} rawFields The raw query parameter value.
+   * @param {FieldSchema} schema The allowed DTO field schema.
+   * @param {FieldsParseOptions} [options] The validation options.
+   * @returns {FieldsProjection | undefined} The parsed projection, an empty projection for an explicit empty string, or `undefined` when omitted.
+   * @throws {FieldsBadRequestException} If parsing or validation fails.
+   */
+  static parseAndValidate(rawFields, schema, options) {
+    const projection = FieldsParser.parse(rawFields);
+    if (!projection) {
+      return void 0;
+    }
+    FieldsValidator.validateProjection(projection, schema);
+    if (options?.allowNested === false) {
+      FieldsValidator.validateNoNestedSelection(projection);
+    }
+    if (options?.requireIncludeForRelations) {
+      FieldsValidator.validateIncludeRequirements(projection, schema, options.include);
+    }
+    return projection;
+  }
+  /**
+   * Applies a projection to a source value.
+   *
+   * @param {T} value The source value.
+   * @param {FieldsProjection} [projection] The parsed projection tree.
+   * @returns {T} The projected value.
+   */
+  static project(value, projection) {
+    return FieldsProjector.project(value, projection);
+  }
+};
+
+// src/fields/fields-query.decorator.ts
+var import_common3 = require("@nestjs/common");
+var FieldsQueryParam = (0, import_common3.createParamDecorator)(
+  (data, context) => {
+    const request = context.switchToHttp().getRequest();
+    const schema = buildFieldSchemaFromDto(data.dtoClass);
+    return Fields.parseAndValidate(request.query?.fields, schema, data.options);
+  }
+);
+function FieldsQuery(dtoClass, options) {
+  return FieldsQueryParam({ dtoClass, options });
+}
+
+// src/fields/filters/exception.filter.ts
+var import_common4 = require("@nestjs/common");
+var FieldsExceptionFilter = class {
+  /**
+   * Writes the fields error response through the active HTTP adapter response.
+   *
+   * @param {FieldsBadRequestException} exception The fields parser or validator exception.
+   * @param {ArgumentsHost} host The Nest arguments host.
+   * @returns {void}
+   */
+  catch(exception, host) {
+    const response = host.switchToHttp().getResponse();
+    const statusCode = exception.getStatus();
+    const exceptionResponse = exception.getResponse();
+    response.status(statusCode).json({
+      statusCode,
+      ...typeof exceptionResponse === "object" ? exceptionResponse : { message: exceptionResponse }
+    });
+  }
+};
+FieldsExceptionFilter = __decorateClass([
+  (0, import_common4.Catch)(FieldsBadRequestException)
+], FieldsExceptionFilter);
+
+// src/fields/prepare-fields-query.ts
+function prepareFieldsQuery(query, schemaOrDto, options) {
+  const schema = resolveFieldSchema(schemaOrDto);
+  const mergedInclude = mergeInclude(options?.baseInclude, query.include);
+  const projection = Fields.parseAndValidate(query.fields, schema, {
+    ...options,
+    include: options?.include ?? mergedInclude
+  });
+  if (!projection) {
+    return {
+      query: {
+        ...query,
+        ...typeof mergedInclude === "undefined" ? {} : { include: mergedInclude }
+      },
+      projection
+    };
+  }
+  return {
+    query: {
+      ...query,
+      include: Fields.include(projection, schema, mergedInclude)
+    },
+    projection
+  };
+}
+function resolveFieldSchema(schemaOrDto) {
+  if (typeof schemaOrDto === "function") {
+    return buildFieldSchemaFromDto(schemaOrDto);
+  }
+  return schemaOrDto;
+}
+
+// src/pipes/empty-string-to-null.pipe.ts
+var import_common5 = require("@nestjs/common");
+var EmptyStringToNullPipe = class {
+  /**
+   * Transforms request body values by replacing blank string entries with null.
+   * @param {unknown} value The incoming request value.
+   * @param {ArgumentMetadata} metadata Metadata of the current argument.
+   * @returns {unknown} The transformed body value or the unchanged value.
+   */
+  transform(value, metadata) {
+    if (metadata.type !== "body") {
+      return value;
+    }
+    return EmptyStringToNullPipe.mapEmptyStringToNull(value);
+  }
+  /**
+   * Recursively maps empty strings in any nested structure to null.
+   * @param {unknown} value The value to normalize.
+   * @returns {unknown} The normalized value.
+   */
+  static mapEmptyStringToNull(value) {
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      return trimmed === "" ? null : trimmed;
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => EmptyStringToNullPipe.mapEmptyStringToNull(item));
+    }
+    if (value && typeof value === "object") {
+      return Object.fromEntries(
+        Object.entries(value).map(([key, item]) => [
+          key,
+          EmptyStringToNullPipe.mapEmptyStringToNull(item)
+        ])
+      );
+    }
+    return value;
+  }
+};
+EmptyStringToNullPipe = __decorateClass([
+  (0, import_common5.Injectable)()
+], EmptyStringToNullPipe);
+
+// src/pipes/query-transform.pipe.ts
+var import_common6 = require("@nestjs/common");
+var QueryTransformPipe = class {
+  /**
+   * Transforms query values by parsing primitive string values and dotted keys.
+   *
+   * @param {unknown} value Incoming request value.
+   * @param {ArgumentMetadata} metadata Nest argument metadata.
+   * @returns {unknown} Transformed query object or unchanged value.
+   */
+  transform(value, metadata) {
+    if (metadata.type === "query" && typeof value === "object") {
+      return parseObject(value);
+    }
+    return value;
+  }
+};
+(0, import_common6.Injectable)()(QueryTransformPipe);
+
+// src/util/query/parse-query-object.ts
+function parseQueryObject(value) {
+  return parseObject(value);
+}
+
+// src/core/page-meta.ts
+var PageMeta = class {
+  page;
+  perPage;
+  itemCount;
+  pageCount;
+  hasPrevPage;
+  hasNextPage;
+  /**
+   * Computes pagination metadata from validated options and a total count.
+   *
+   * @param {PageMetaParams} params Pagination options and item count.
+   */
+  constructor({ pageOptions, itemCount }) {
+    this.page = pageOptions.page;
+    this.perPage = pageOptions.perPage;
+    this.itemCount = itemCount;
+    this.pageCount = Math.ceil(this.itemCount / this.perPage);
+    this.hasPrevPage = this.page > 1;
+    this.hasNextPage = this.page < this.pageCount;
+  }
+};
+
+// src/core/query.service.ts
+var import_common8 = require("@nestjs/common");
+
+// src/query-service/errors/handle-query-service-error.ts
+var import_common7 = require("@nestjs/common");
+
+// src/query-service/errors/is-known-request-error-like.ts
+function isKnownRequestErrorLike(error) {
+  return error instanceof Error && typeof error.code === "string";
+}
+
+// src/query-service/errors/is-validation-error-like.ts
+function isValidationErrorLike(error) {
+  return error instanceof Error && error.name === "PrismaClientValidationError";
+}
+
+// src/query-service/errors/handle-query-service-error.ts
+function handleQueryServiceError(error, options, args, errorLogger) {
+  if (isValidationErrorLike(error)) {
+    throw new import_common7.BadRequestException({ message: "Invalid query.", options, parsedArgs: args });
+  }
+  if (isKnownRequestErrorLike(error)) {
+    throw new import_common7.BadRequestException({
+      message: error.message.split("\n\n\n")[1] ?? "Invalid data",
+      code: error.code,
+      data: error.meta
+    });
+  }
+  if (error instanceof import_common7.HttpException) {
+    throw error;
+  }
+  errorLogger?.error(error);
+  throw new import_common7.InternalServerErrorException();
+}
+
+// src/query-service/errors/is-forbidden-like.ts
+function isForbiddenLike(error) {
+  return error instanceof Error && (error.name === "ForbiddenError" || error.name === "ForbiddenErrorType");
+}
+
+// src/core/query.service.ts
+var QueryService = class {
+  /**
+   * Creates a query service.
+   *
+   * @param {Table} table Prisma-compatible delegate.
+   * @param {QueryServiceOptions<Ability, Subject>} serviceOptions Query service options.
+   */
+  constructor(table, serviceOptions = {}) {
+    this.table = table;
+    this.serviceOptions = serviceOptions;
+  }
+  table;
+  serviceOptions;
+  /**
+   * Finds the first item matching query options.
+   *
+   * @param {Options['findOne']} options Query options.
+   * @param {Ability} ability Optional access-control ability.
+   * @returns {Promise<T | null>} Found item or null.
+   */
+  async findOne(options, ability) {
+    const args = {
+      select: parseQueryObject(options.select),
+      include: parseQueryObject(options.include),
+      where: this.mergeAbilityWhere(options.where, ability),
+      orderBy: parseQueryObject(options.orderBy),
+      cursor: parseQueryObject(options.cursor),
+      distinct: parseQueryObject(options.distinct)
+    };
+    try {
+      return await this.table.findFirst(args);
+    } catch (error) {
+      this.handleError(error, options, args);
+    }
+  }
+  /**
+   * Finds all items matching query options.
+   *
+   * @param {Options['findMany']} options Query options.
+   * @param {Ability} ability Optional access-control ability.
+   * @returns {Promise<T[]>} Found items.
+   */
+  async findMany(options = {}, ability) {
+    const args = {
+      select: parseQueryObject(options.select),
+      include: parseQueryObject(options.include),
+      where: this.mergeAbilityWhere(options.where, ability),
+      orderBy: parseQueryObject(options.orderBy),
+      cursor: parseQueryObject(options.cursor),
+      take: options.take,
+      skip: options.skip,
+      distinct: parseQueryObject(options.distinct)
+    };
+    try {
+      return await this.table.findMany(args);
+    } catch (error) {
+      this.handleError(error, options, args);
+    }
+  }
+  /**
+   * Finds an item by ID.
+   *
+   * @param {string} id Item ID.
+   * @param {Options['findById']} options Query options.
+   * @param {Ability} ability Optional access-control ability.
+   * @returns {Promise<T>} Found item.
+   * @throws NotFoundException when no item exists.
+   */
+  async findById(id, options = {}, ability) {
+    const args = {
+      where: this.mergeAbilityWhere({ id }, ability),
+      select: parseQueryObject(options.select),
+      include: parseQueryObject(options.include)
+    };
+    try {
+      const item = await this.table.findFirst(args);
+      if (!item) {
+        throw new import_common8.NotFoundException("Item not found.");
+      }
+      return item;
+    } catch (error) {
+      this.handleError(error, options, args);
+    }
+  }
+  /**
+   * Finds an item by a unique where input.
+   *
+   * @param {Options['findUnique']} options Query options.
+   * @param {Ability} ability Optional access-control ability.
+   * @returns {Promise<T>} Found item.
+   * @throws NotFoundException when no item exists.
+   */
+  async findUnique(options, ability) {
+    const args = {
+      where: parseQueryObject(options.where),
+      select: parseQueryObject(options.select),
+      include: parseQueryObject(options.include)
+    };
+    try {
+      const item = ability ? await this.table.findFirst({
+        ...args,
+        where: this.mergeAbilityWhere(options.where, ability)
+      }) : await this.table.findUnique(args);
+      if (!item) {
+        throw new import_common8.NotFoundException("Item not found.");
+      }
+      return item;
+    } catch (error) {
+      this.handleError(error, options, args);
+    }
+  }
+  /**
+   * Runs an aggregate query.
+   *
+   * @param {Options['aggregate']} options Aggregate options.
+   * @returns {Promise<unknown>} Serialized aggregate result.
+   */
+  async aggregate(options) {
+    const args = {
+      ...options,
+      where: parseQueryObject(options.where),
+      orderBy: parseQueryObject(options.orderBy),
+      cursor: parseQueryObject(options.cursor)
+    };
+    const cleanedArgs = Object.fromEntries(
+      Object.entries(args).filter(([, value]) => value !== void 0)
+    );
+    return serializeDecimalValues(await this.table.aggregate(cleanedArgs));
+  }
+  /**
+   * Counts items matching query options.
+   *
+   * @param {Options['count']} options Count options.
+   * @param {Ability} ability Optional access-control ability.
+   * @returns {Promise<number>} Item count.
+   */
+  async count(options, ability) {
+    const args = {
+      where: this.mergeAbilityWhere(options.where, ability)
+    };
+    return await this.table.count(args);
+  }
+  /**
+   * Runs a paginated query.
+   *
+   * @param {Options['query']} options Query options.
+   * @param {Ability} ability Optional access-control ability.
+   * @returns {Promise<{ pageMeta: PageMeta; items: T[] }>} Paginated result.
+   */
+  async query(options, ability) {
+    try {
+      const page = options.page ?? 1;
+      const perPage = options.perPage ?? 10;
+      const skip = (page - 1) * perPage;
+      const where = this.mergeAbilityWhere(options.where, ability);
+      const itemCount = await this.count({ where });
+      const items = await this.findMany({ ...options, take: perPage, skip, where });
+      const pageMeta = this.createPageMeta({ itemCount, pageOptions: { page, perPage } });
+      return { pageMeta, items };
+    } catch (error) {
+      if (isForbiddenLike(error)) {
+        throw new import_common8.ForbiddenException("Insufficient permissions.");
+      }
+      throw error;
+    }
+  }
+  /**
+   * Creates pagination metadata without class-transformer decorators.
+   *
+   * @param {PageMetaParams} params Pagination options and item count.
+   * @returns {PageMeta} Computed pagination metadata.
+   */
+  createPageMeta(params) {
+    return new PageMeta(params);
+  }
+  /**
+   * Combines a where input with an access-control where input when available.
+   *
+   * @param {unknown} where Query where object.
+   * @param {Ability} ability Optional access-control ability.
+   * @returns {unknown} Merged where object.
+   */
+  mergeAbilityWhere(where, ability) {
+    const parsedWhere = parseQueryObject(where ?? {});
+    if (!ability || !this.serviceOptions.accessibleWhere || this.serviceOptions.subject === void 0) {
+      return parsedWhere;
+    }
+    return {
+      AND: [this.serviceOptions.accessibleWhere(ability, this.serviceOptions.subject), parsedWhere]
+    };
+  }
+  /**
+   * Converts Prisma-like errors to Nest HTTP exceptions.
+   *
+   * @param {unknown} error Error thrown by a delegate.
+   * @param {unknown} options Original options.
+   * @param {unknown} args Parsed delegate args.
+   * @throws Converted Nest HTTP exception.
+   */
+  handleError(error, options, args) {
+    handleQueryServiceError(error, options, args, this.serviceOptions.errorLogger);
+  }
+};
+QueryService = __decorateClass([
+  (0, import_common8.Injectable)()
+], QueryService);
+
+// src/resource-query-paginated.ts
+var pageMetaFieldSchema = {
+  page: true,
+  perPage: true,
+  itemCount: true,
+  pageCount: true,
+  hasPrevPage: true,
+  hasNextPage: true
+};
+function preparePaginatedFieldsQuery(query, schemaOrDto, options) {
+  const itemSchema = resolveFieldSchema(schemaOrDto);
+  const responseSchema = {
+    items: relation(itemSchema),
+    meta: relation(pageMetaFieldSchema)
+  };
+  const parsedProjection = FieldsParser.parse(query.fields);
+  if (parsedProjection && (isEmptyProjection(parsedProjection) || hasPaginatedProjectionShape(parsedProjection))) {
+    const responseProjection = Fields.parseAndValidate(query.fields, responseSchema, options);
+    const itemProjection = getItemProjection(responseProjection);
+    const include = itemProjection ? Fields.include(itemProjection, itemSchema, mergeInclude(options?.baseInclude, query.include)) : mergeInclude(options?.baseInclude, query.include);
+    return {
+      query: {
+        ...query,
+        ...typeof include === "undefined" ? {} : { include }
+      },
+      itemProjection,
+      responseProjection
+    };
+  }
+  const prepared = prepareFieldsQuery(query, schemaOrDto, options);
+  return {
+    query: prepared.query,
+    itemProjection: prepared.projection,
+    responseProjection: void 0
+  };
+}
+function hasPaginatedProjectionShape(projection) {
+  return Object.keys(projection).some((key) => key === "items" || key === "meta");
+}
+function isEmptyProjection(projection) {
+  return Object.keys(projection).length === 0;
+}
+function getItemProjection(projection) {
+  const items = projection.items;
+  return items && items !== true ? items : void 0;
+}
+
+// src/core/resource-query.ts
+var ResourceQuery = class {
+  /**
+   * Runs a paginated query, maps models to DTOs and applies the requested fields projection.
+   *
+   * @param {ResourceQueryOptions<TService, TQuery, TSchema, TModel, TDto, TAbility>} options Query options.
+   * @returns {Promise<PaginatedResponse<TDto>>} Projected paginated response DTO.
+   */
+  static async query(options) {
+    const prepared = preparePaginatedFieldsQuery(options.query, options.schema, {
+      ...options.fields,
+      baseInclude: options.include ?? options.fields?.baseInclude
+    });
+    const result = await options.service.query(prepared.query, options.ability);
+    const dtoItems = await Promise.all(result.items.map((item) => options.map(item, options.ability)));
+    const response = this.createResponse(dtoItems, result.pageMeta);
+    if (prepared.responseProjection) {
+      return Fields.project(response, prepared.responseProjection);
+    }
+    return this.createResponse(Fields.project(dtoItems, prepared.itemProjection), result.pageMeta);
+  }
+  /**
+   * Finds one resource by ID, maps it to a DTO and applies the requested fields projection.
+   *
+   * @param {ResourceFindByIdOptions<TService, TQuery, TSchema, TModel, TDto, TAbility>} options Find options.
+   * @returns {Promise<TDto>} Projected response DTO.
+   */
+  static async findById(options) {
+    const prepared = prepareFieldsQuery(options.query, options.schema, {
+      ...options.fields,
+      baseInclude: options.include ?? options.fields?.baseInclude
+    });
+    const model = await options.service.findById(options.id, prepared.query, options.ability);
+    const dto = await options.map(model, options.ability);
+    return Fields.project(dto, prepared.projection);
+  }
+  /**
+   * Creates a plain paginated response without serialization decorators.
+   *
+   * @param {T[]} items Mapped and projected response items.
+   * @param {PageMeta} meta Pagination metadata from the service.
+   * @returns {PaginatedResponse<T>} Public response envelope.
+   */
+  static createResponse(items, meta) {
+    return { items, meta };
+  }
+};
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  ApiFieldsQuery,
+  EmptyStringToNullPipe,
+  Fields,
+  FieldsBadRequestException,
+  FieldsExceptionFilter,
+  FieldsParser,
+  FieldsProjector,
+  FieldsQuery,
+  FieldsValidator,
+  PageMeta,
+  QueryService,
+  QueryTransformPipe,
+  ResourceQuery,
+  buildFieldSchemaFromDto,
+  createObjectFromPath,
+  diffObjects,
+  getDtoFields,
+  hasObjectDifferences,
+  isBoolean,
+  isDecimalLike,
+  isNumber,
+  isObject,
+  isPlainObject,
+  parseBoolean,
+  parseObject,
+  parseObjectProperties,
+  parseQueryObject,
+  prepareFieldsQuery,
+  relation,
+  resolveFieldSchema,
+  serializeDecimalValues
+});
+//# sourceMappingURL=core.cjs.map
