@@ -1,20 +1,21 @@
 const mockApplyDecorators = jest.fn((...decorators) => decorators);
 const mockApiProperty = jest.fn((options) => ({ type: 'property', value: options }));
 
-jest.mock('@nestjs/common', () => {
-  const actual = jest.requireActual('@nestjs/common');
+const actualNestCommon = await import('@nestjs/common');
+
+jest.unstable_mockModule('@nestjs/common', () => {
   return {
-    ...actual,
+    ...actualNestCommon,
     applyDecorators: mockApplyDecorators,
   };
 });
 
-jest.mock('@nestjs/swagger', () => ({
+jest.unstable_mockModule('@nestjs/swagger', () => ({
   ApiProperty: mockApiProperty,
 }));
 
-import { ApiPropertyCreatedAt } from './api-property-created-at.decorator';
-import { ApiPropertyUpdatedAt } from './api-property-updated-at.decorator';
+const { ApiPropertyCreatedAt } = await import('./api-property-created-at.decorator.js');
+const { ApiPropertyUpdatedAt } = await import('./api-property-updated-at.decorator.js');
 
 describe('timestamp property decorators', () => {
   beforeEach(() => {

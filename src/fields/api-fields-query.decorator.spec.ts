@@ -2,18 +2,21 @@ const mockApplyDecorators = jest.fn();
 const mockApiQuery = jest.fn();
 const mockApiBadRequestResponse = jest.fn();
 
-jest.mock('@nestjs/common', () => ({
-  ...jest.requireActual('@nestjs/common'),
+const actualNestCommon = await import('@nestjs/common');
+const actualNestSwagger = await import('@nestjs/swagger');
+
+jest.unstable_mockModule('@nestjs/common', () => ({
+  ...actualNestCommon,
   applyDecorators: mockApplyDecorators,
 }));
 
-jest.mock('@nestjs/swagger', () => ({
-  ...jest.requireActual('@nestjs/swagger'),
+jest.unstable_mockModule('@nestjs/swagger', () => ({
+  ...actualNestSwagger,
   ApiQuery: mockApiQuery,
   ApiBadRequestResponse: mockApiBadRequestResponse,
 }));
 
-import { ApiFieldsQuery } from './api-fields-query.decorator';
+const { ApiFieldsQuery } = await import('./api-fields-query.decorator.js');
 
 describe('ApiFieldsQuery', () => {
   beforeEach(() => {

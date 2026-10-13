@@ -1,10 +1,10 @@
 const mockAccessibleBy = jest.fn();
 
-jest.mock('@casl/prisma', () => ({
+jest.unstable_mockModule('@casl/prisma', () => ({
   accessibleBy: mockAccessibleBy,
 }));
 
-import { createCaslAccessibleWhere } from './adapter.js';
+const { createCaslAccessibleWhere } = await import('./adapter.js');
 
 describe('CASL adapter', () => {
   it('maps CASL Prisma v1 subject maps into a generic where resolver', () => {

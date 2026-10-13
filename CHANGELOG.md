@@ -1,5 +1,51 @@
 # @querry-kit/nest
 
+## 1.0.7
+
+### Patch Changes
+
+- 4cf94a8: Refresh the NestJS common development dependency.
+- 83677a0: Refresh the NestJS core development dependency.
+
+## 1.0.6
+
+### Patch Changes
+
+- b966a57: Resolve vulnerable transitive development dependencies.
+
+## 1.0.5
+
+### Patch Changes
+
+- 96ac5df: Add NestJS 12 and CASL Prisma 2 compatibility.
+
+## 1.0.4
+
+### Patch Changes
+
+- 79303a0: Install Prettier directly so Changesets can format release changelogs in CI.
+- 4baa41f: Fix the Changesets v2 workflow input so release pull requests can be created and updated again.
+- 57078e8: Resolve vulnerable transitive YAML and multipart parser versions.
+- b7448fc: Update Jest to 30.5.1 and keep clean CI installs compatible with its watcher dependency.
+
+## 1.0.3
+
+### Patch Changes
+
+- b4f448c: Keep the central documentation changelog in sync after releases.
+
+## 1.0.2
+
+### Patch Changes
+
+- 8066ee0: Update transitive dependencies to resolve security alerts.
+
+## 1.0.1
+
+### Patch Changes
+
+- 60151de: Add security reporting and repository maintenance configuration.
+
 ## 1.0.0
 
 ### Major Changes

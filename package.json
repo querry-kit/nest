@@ -1,6 +1,6 @@
 {
   "name": "@querry-kit/nest",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "Consolidated NestJS helpers for Query Kit fields, Prisma-style query services, CASL policies, decorators, pipes, and response projection.",
   "keywords": [
     "nestjs",
@@ -27,7 +27,7 @@
     "url": "https://github.com/querry-kit/nest/issues"
   },
   "author": {
-    "name": "Tobias Wälde",
+    "name": "Tobias W\u00e4lde",
     "email": "business@tobiaswaelde.com",
     "url": "https://tobiaswaelde.com"
   },
@@ -120,17 +120,17 @@
     "build": "tsup",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --config ./jest.config.cjs",
-    "test:coverage": "jest --config ./jest.config.cjs --coverage",
-    "test:watch": "jest --config ./jest.config.cjs --watch",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs --coverage",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --config ./jest.config.cjs --watch",
     "test:optional-peers": "node test/optional-validation-peers.mjs"
   },
   "peerDependencies": {
     "@casl/ability": "^6.7.3 || ^7.0.0",
     "@casl/prisma": "^1.5.2 || ^2.0.0",
-    "@nestjs/common": "^11.1.28",
-    "@nestjs/core": "^11.1.28",
-    "@nestjs/swagger": "^11.4.6",
+    "@nestjs/common": "^11.1.28 || ^12.0.1",
+    "@nestjs/core": "^11.1.28 || ^12.0.1",
+    "@nestjs/swagger": "^11.4.6 || ^12.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "reflect-metadata": "^0.2.2",
@@ -157,14 +157,14 @@
     "qs": "^6.16.0"
   },
   "devDependencies": {
-    "@casl/ability": "^6.8.1",
-    "@casl/prisma": "1.5.2",
-    "@changesets/cli": "^2.31.1",
+    "@casl/ability": "^7.0.1",
+    "@casl/prisma": "^2.0.2",
+    "@changesets/cli": "^3.0.2",
     "@jest/types": "^30.5.1",
-    "@nestjs/common": "^11.2.7",
-    "@nestjs/core": "^11.2.7",
-    "@nestjs/platform-express": "^11.2.7",
-    "@nestjs/swagger": "^11.4.7",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/platform-express": "^12.0.1",
+    "@nestjs/swagger": "^12.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.5",
     "@types/qs": "^6.15.1",
@@ -180,6 +180,7 @@
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.2",
-    "zod": "^4.6.7"
+    "zod": "^4.6.7",
+    "prettier": "^3.9.6"
   }
 }

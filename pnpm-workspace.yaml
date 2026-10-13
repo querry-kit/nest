@@ -5,6 +5,7 @@ nodeVersion: 24.18.0
 minimumReleaseAge: 1440
 
 overrides:
+  multer@<2.3.0: ^2.3.0
   js-yaml@>=4.0.0 <4.3.2: ^4.3.2
   js-yaml@>=5.0.0 <5.4.1: ^5.4.3
   argparse@1.0.10: 2.0.1
@@ -36,10 +37,8 @@ allowBuilds:
   unrs-resolver: true
 
 minimumReleaseAgeExclude:
+  - multer@2.3.0
   - browserslist@4.28.7
   - baseline-browser-mapping@2.11.0
   - js-yaml@3.15.2
   - js-yaml@4.3.2
-
-patchedDependencies:
-  braces@3.0.3: patches/braces@3.0.3.patch

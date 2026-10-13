@@ -1,8 +1,10 @@
 const mockCreateParamDecorator = jest.fn();
 let mockFactory: ((data: unknown, context: unknown) => unknown) | undefined;
 
-jest.mock('@nestjs/common', () => ({
-  ...jest.requireActual('@nestjs/common'),
+const actualNestCommon = await import('@nestjs/common');
+
+jest.unstable_mockModule('@nestjs/common', () => ({
+  ...actualNestCommon,
   createParamDecorator: mockCreateParamDecorator.mockImplementation((factory: typeof mockFactory) => {
     mockFactory = factory;
     return jest.fn();
@@ -11,7 +13,7 @@ jest.mock('@nestjs/common', () => ({
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { FieldsQuery } from './fields-query.decorator';
+const { FieldsQuery } = await import('./fields-query.decorator.js');
 
 class UserDto {
   @ApiProperty()

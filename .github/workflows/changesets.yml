@@ -30,7 +30,7 @@ jobs:
         uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
@@ -41,9 +41,9 @@ jobs:
 
       - name: Create or update release PR
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
-          version: pnpm changeset version
+          version-script: pnpm changeset version
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
