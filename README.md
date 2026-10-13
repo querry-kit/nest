@@ -233,3 +233,5 @@ Release pull requests are maintained by `changesets/action@v2` using the
 the generated changelog in clean CI installations.
 
 `pnpm test:coverage` collects all source files, prints the coverage summary, and writes HTML and LCOV reports to `coverage/`. GitHub Actions runs the same command and retains the report as a workflow artifact.
+
+Dependency maintenance keeps NestJS development dependencies current within the declared major version.
