@@ -100,6 +100,18 @@
       "import": "./dist/pipes.js",
       "require": "./dist/pipes.cjs",
       "default": "./dist/pipes.js"
+    },
+    "./zod": {
+      "types": "./dist/zod.d.ts",
+      "import": "./dist/zod.js",
+      "require": "./dist/zod.cjs",
+      "default": "./dist/zod.js"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs",
+      "default": "./dist/core.js"
     }
   },
   "scripts": {
@@ -110,7 +122,8 @@
     "lint:fix": "eslint . --fix",
     "test": "jest --config ./jest.config.cjs",
     "test:coverage": "jest --config ./jest.config.cjs --coverage",
-    "test:watch": "jest --config ./jest.config.cjs --watch"
+    "test:watch": "jest --config ./jest.config.cjs --watch",
+    "test:optional-peers": "node test/optional-validation-peers.mjs"
   },
   "peerDependencies": {
     "@casl/ability": "^6.7.3 || ^7.0.0",
@@ -120,7 +133,8 @@
     "@nestjs/swagger": "^11.4.6",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "zod": "^4.0.0"
   },
   "peerDependenciesMeta": {
     "@casl/ability": {
@@ -128,34 +142,44 @@
     },
     "@casl/prisma": {
       "optional": true
+    },
+    "zod": {
+      "optional": true
+    },
+    "class-validator": {
+      "optional": true
+    },
+    "class-transformer": {
+      "optional": true
     }
   },
   "dependencies": {
-    "qs": "^6.15.3"
+    "qs": "^6.16.0"
   },
   "devDependencies": {
-    "@casl/ability": "^6.7.3",
+    "@casl/ability": "^6.8.1",
     "@casl/prisma": "1.5.2",
     "@changesets/cli": "^2.31.1",
-    "@jest/types": "^30.4.1",
-    "@nestjs/common": "^11.1.28",
-    "@nestjs/core": "^11.1.28",
-    "@nestjs/platform-express": "^11.1.28",
-    "@nestjs/swagger": "^11.4.6",
+    "@jest/types": "^30.5.1",
+    "@nestjs/common": "^11.2.7",
+    "@nestjs/core": "^11.2.7",
+    "@nestjs/platform-express": "^11.2.7",
+    "@nestjs/swagger": "^11.4.7",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.6.5",
     "@types/qs": "^6.15.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
-    "eslint": "^10.7.0",
+    "eslint": "^10.12.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
-    "jest": "^30.4.2",
+    "jest": "^30.5.2",
     "prettier-plugin-organize-imports": "^4.3.0",
     "reflect-metadata": "^0.2.2",
-    "ts-jest": "^29.4.11",
+    "ts-jest": "^29.4.14",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.64.0"
+    "typescript-eslint": "^8.71.2",
+    "zod": "^4.6.7"
   }
 }

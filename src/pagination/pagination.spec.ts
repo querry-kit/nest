@@ -1,4 +1,4 @@
-import { plainToInstance } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { PageMetaDTO, PageOptionsDTO, PaginatedDTO } from './index.js';
 
@@ -65,5 +65,20 @@ describe('pagination DTOs', () => {
 
     expect(itemsMetadata.type()).toEqual([Object]);
     expect(metaMetadata.type()).toBe(PageMetaDTO);
+  });
+});
+
+describe('decorated pagination compatibility', () => {
+  it('retains exposed metadata with inherited calculation logic', () => {
+    const meta = new PageMetaDTO({ itemCount: 11, pageOptions: { page: 1, perPage: 10 } });
+
+    expect(instanceToPlain(meta, { excludeExtraneousValues: true })).toEqual({
+      page: 1,
+      perPage: 10,
+      itemCount: 11,
+      pageCount: 2,
+      hasPrevPage: false,
+      hasNextPage: true,
+    });
   });
 });

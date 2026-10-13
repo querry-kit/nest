@@ -1,12 +1,12 @@
+import type { PageMeta } from './core/page-meta.js';
 import type { PrepareFieldsQueryOptions, SchemaOrDto } from './fields/index';
-import type { PaginatedDTO } from './pagination/paginated.dto';
 
 export type ResourceQueryServiceLike<TAbility> = {
   query<T = unknown>(query: unknown, ability?: TAbility): Promise<{ pageMeta: PageMetaLike; items: T[] }>;
   findById<T = unknown>(id: string, query?: unknown, ability?: TAbility): Promise<T>;
 };
 
-export type PageMetaLike = ConstructorParameters<typeof PaginatedDTO<unknown>>[1];
+export type PageMetaLike = PageMeta;
 
 export type ResourceMapper<TModel, TDto, TAbility> = (model: TModel, ability?: TAbility) => TDto | Promise<TDto>;
 
