@@ -1,5 +1,16 @@
 # @querry-kit/nest
 
+## 1.1.0
+
+### Minor Changes
+
+- ccbbdef: Add optional Zod 4 query and pagination schemas through `@querry-kit/nest/zod`.
+- ccbbdef: Make class-validator and class-transformer optional and add a core entrypoint for query services and resource helpers without either dependency. Existing DTO-based imports retain their decorated responses.
+
+### Patch Changes
+
+- ccbbdef: Refresh dependencies within their supported version ranges.
+
 ## 1.0.7
 
 ### Patch Changes
