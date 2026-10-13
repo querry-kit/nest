@@ -1,5 +1,12 @@
 # @querry-kit/nest
 
+## 1.0.7
+
+### Patch Changes
+
+- 4cf94a8: Refresh the NestJS common development dependency.
+- 83677a0: Refresh the NestJS core development dependency.
+
 ## 1.0.6
 
 ### Patch Changes
