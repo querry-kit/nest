@@ -1,5 +1,7 @@
-const mockCreateParamDecorator = jest.fn();
+import { jest } from '@jest/globals';
+
 let mockFactory: ((data: unknown, context: unknown) => unknown) | undefined;
+const mockCreateParamDecorator = jest.fn<(factory: typeof mockFactory) => unknown>();
 
 const actualNestCommon = await import('@nestjs/common');
 
@@ -15,6 +17,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 const { FieldsQuery } = await import('./fields-query.decorator.js');
 
+/** DTO used to validate the generated fields parameter factory. */
 class UserDto {
   @ApiProperty()
   id!: string;

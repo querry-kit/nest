@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals';
+
 const mockApplyDecorators = jest.fn();
 const mockApiQuery = jest.fn();
 const mockApiBadRequestResponse = jest.fn();
