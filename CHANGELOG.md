@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 1.1.1
+
+### Patch Changes
+
+- 0a1ec18: Honor explicit CASL field denials, prevent query prototype injection, preserve dotted sibling filters, and repair ESM test type checking.
+
 ## 1.1.0
 
 ### Minor Changes
