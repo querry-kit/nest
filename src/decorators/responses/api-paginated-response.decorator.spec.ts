@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals';
+
 import 'reflect-metadata';
 
 const mockApiExtraModels = jest.fn(() => jest.fn());

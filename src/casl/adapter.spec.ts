@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals';
+
 const mockAccessibleBy = jest.fn();
 
 jest.unstable_mockModule('@casl/prisma', () => ({

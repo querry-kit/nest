@@ -19,8 +19,7 @@ export type CaslDtoFilterOptions<TAction extends string = string> = {
 /**
  * Returns a shallow DTO copy containing only fields readable through a CASL ability.
  *
- * A permission for the special `all` field keeps every enumerable DTO field. The
- * DTO is wrapped with CASL's {@link subject} helper before individual fields are
+ * The DTO is wrapped with CASL's {@link subject} helper before individual fields are
  * checked, so conditional rules can inspect its values. The input DTO is never
  * mutated.
  *
@@ -47,10 +46,6 @@ export function filterCaslFields<
   const action = options.action ?? ('read' as TAction);
   const dtoSubject = subject(subjectName, cloneDto(dto) as Record<string, unknown>);
 
-  if (ability.can(action, dtoSubject, 'all')) {
-    return cloneDto(dto);
-  }
-
   const filtered = createDtoShell(dto);
   const dtoFields = dto as Record<string, unknown>;
   const filteredFields = filtered as Record<string, unknown>;
@@ -63,10 +58,22 @@ export function filterCaslFields<
   return filtered;
 }
 
+/**
+ * Copies enumerable DTO fields while retaining its prototype.
+ *
+ * @param {TDto} dto Source DTO.
+ * @returns {TDto} A shallow copy.
+ */
 function cloneDto<TDto extends object>(dto: TDto): TDto {
   return Object.assign(createDtoShell(dto), dto);
 }
 
+/**
+ * Creates an empty DTO with the original prototype.
+ *
+ * @param {TDto} dto Source DTO.
+ * @returns {TDto} Empty DTO shell.
+ */
 function createDtoShell<TDto extends object>(dto: TDto): TDto {
   return Object.create(Object.getPrototypeOf(dto)) as TDto;
 }

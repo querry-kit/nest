@@ -351,3 +351,7 @@ and documentation toolchain, including Parcel's file watcher.
 Release pull requests are maintained by `changesets/action@v2` using the
 `version-script` input. Prettier is installed directly so Changesets can format
 the generated changelog in clean CI installations.
+
+Query normalization ignores `__proto__`, `constructor`, and `prototype` path segments. Dotted sibling paths merge; later assignments replace values at conflicting paths. CASL DTO filtering checks each field and honors explicit denials after general permissions; `all` is not a wildcard field.
+
+Run `pnpm check` for source and ESM test type checking; CI runs it before building.

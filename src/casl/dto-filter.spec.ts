@@ -13,7 +13,7 @@ describe('filterCaslFields', () => {
     expect(result).not.toBe(dto);
   });
 
-  it('keeps every field when the all field is allowed', () => {
+  it('keeps every field when each field is allowed', () => {
     const ability: Ability = {
       can: jest.fn().mockReturnValue(true),
     };
@@ -22,8 +22,8 @@ describe('filterCaslFields', () => {
 
     expect(result).toEqual(dto);
     expect(result).not.toBe(dto);
-    expect(ability.can).toHaveBeenCalledTimes(1);
-    expect(ability.can).toHaveBeenCalledWith('read', expect.objectContaining(dto), 'all');
+    expect(ability.can).toHaveBeenCalledTimes(3);
+    expect(ability.can).toHaveBeenCalledWith('read', expect.objectContaining(dto), 'internalNote');
   });
 
   it('keeps only individually readable fields without mutating the input DTO', () => {
@@ -53,6 +53,14 @@ describe('filterCaslFields', () => {
     can('read', 'User', ['email'], { id: 'user-1' });
 
     expect(filterCaslFields(dto, 'User', build())).toEqual({ email: 'ada@example.test' });
+  });
+
+  it('honors explicit field denials after a general permission', () => {
+    const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
+    can('read', 'User');
+    cannot('read', 'User', ['internalNote']);
+
+    expect(filterCaslFields(dto, 'User', build())).toEqual({ id: 'user-1', email: 'ada@example.test' });
   });
 
   it('preserves the DTO prototype', () => {

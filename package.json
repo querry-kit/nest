@@ -160,6 +160,7 @@
     "@casl/ability": "^7.0.1",
     "@casl/prisma": "^2.0.2",
     "@changesets/cli": "^3.0.2",
+    "@jest/globals": "^30.5.2",
     "@jest/types": "^30.5.1",
     "@nestjs/common": "^12.0.1",
     "@nestjs/core": "^12.0.1",
