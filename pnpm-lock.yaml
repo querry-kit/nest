@@ -33,10 +33,10 @@ importers:
     devDependencies:
       '@casl/ability':
         specifier: ^7.0.1
-        version: 7.0.1
+        version: 7.0.2
       '@casl/prisma':
         specifier: ^2.0.2
-        version: 2.0.2(@casl/ability@7.0.1)(@prisma/client@6.19.3(typescript@6.0.3))
+        version: 2.0.2(@casl/ability@7.0.2)(@prisma/client@6.19.3(typescript@6.0.3))
       '@changesets/cli':
         specifier: ^3.0.2
         version: 3.0.3
@@ -286,8 +286,8 @@ packages:
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
 
-  '@casl/ability@7.0.1':
-    resolution: {integrity: sha512-krOW1zQGEie5lH6fpryrcsPvc5r2pe5Vn5xbthuzc5X9gwzHIyZgGGgw9dMoSLHXdjB4BIVxGG/HBkG+1NuyZQ==}
+  '@casl/ability@7.0.2':
+    resolution: {integrity: sha512-NOYbLTaw080a1Na4CpBtyGpL+i9NZhtGGt/tPrrNpLEv8EawFusHZCgc58ewyPBiZ0NER0iudB0et+IP8xJbLg==}
 
   '@casl/prisma@2.0.2':
     resolution: {integrity: sha512-IYp9rABl8s9fF+4NubSahYMXqwLbmVCz8Hd9Xa4MbS6xMkSRTTa+tq9oKQFd/SJ6VoLe2oY+7Wg0eF9CjOCnYA==}
@@ -3122,13 +3122,13 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@casl/ability@7.0.1':
+  '@casl/ability@7.0.2':
     dependencies:
       '@ucast/mongo2js': 2.0.0
 
-  '@casl/prisma@2.0.2(@casl/ability@7.0.1)(@prisma/client@6.19.3(typescript@6.0.3))':
+  '@casl/prisma@2.0.2(@casl/ability@7.0.2)(@prisma/client@6.19.3(typescript@6.0.3))':
     dependencies:
-      '@casl/ability': 7.0.1
+      '@casl/ability': 7.0.2
       '@prisma/client': 6.19.3(typescript@6.0.3)
       '@ucast/core': 2.0.0
       '@ucast/js': 4.0.1
