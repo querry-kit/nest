@@ -355,3 +355,7 @@ the generated changelog in clean CI installations.
 Query normalization ignores `__proto__`, `constructor`, and `prototype` path segments. Dotted sibling paths merge; later assignments replace values at conflicting paths. CASL DTO filtering checks each field and honors explicit denials after general permissions; `all` is not a wildcard field.
 
 Run `pnpm check` for source and ESM test type checking; CI runs it before building.
+
+## Development toolchain
+
+Use Node.js 26.13.0 LTS and the package manager pinned in `package.json`. Published library runtime compatibility remains unchanged. Builds use TypeScript 7; ESLint and compiler-API consumers use the TypeScript 6 compatibility package. Dependency overrides, where present, pin security fixes for transitive packages; validate tests and documentation builds when changing them.
