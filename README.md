@@ -358,7 +358,13 @@ Run `pnpm check` for source and ESM test type checking; CI runs it before buildi
 
 ## Development toolchain
 
-Use Node.js 26.13.0 LTS and the package manager pinned in `package.json`. Published library runtime compatibility remains unchanged. Builds use TypeScript 7; ESLint and compiler-API consumers use the TypeScript 6 compatibility package. Dependency overrides, where present, pin security fixes for transitive packages; validate tests and documentation builds when changing them.
+Use Node.js 26.13.0 LTS and the package manager pinned in `package.json`. This release requires Node.js 26.13.0 or newer and no longer supports Node.js 24. Upgrade application runtimes and CI before updating the package. Builds use TypeScript 7; ESLint and compiler-API consumers use the TypeScript 6 compatibility package. Dependency overrides, where present, pin security fixes for transitive packages; validate tests and documentation builds when changing them.
+
+### Dependency maintenance
+
+Development and integration tests use NestJS 12.3.3 and Swagger 12.1.0. Swagger 12.1 requires validation decorators on properties used with `PartialType()` and a whitelisting `ValidationPipe`; review application DTOs when updating Swagger. See the [upstream behavior changes](https://github.com/nestjs/swagger/releases/tag/12.1.0).
+
+Dependency refreshes retain pnpm 11.28.9, the existing TypeScript 6/7 split, and security overrides. Candidates published less than 24 hours ago are deferred; dependency major migrations are outside this update.
 
 ## Scalar grouping
 
