@@ -291,9 +291,9 @@ export class QueryService<
    */
   protected mergeAbilityWhere(where: unknown, ability?: Ability): unknown {
     let parsedWhere: unknown;
-    if (this.serviceOptions.preserveJsonWhereTypes && typeof where === 'string') {
+    if (this.serviceOptions.preserveJsonWhereTypes) {
       try {
-        parsedWhere = JSON.parse(where) as unknown;
+        parsedWhere = typeof where === 'string' ? (JSON.parse(where) as unknown) : (where ?? {});
       } catch {
         throw new BadRequestException('where must contain valid JSON.');
       }

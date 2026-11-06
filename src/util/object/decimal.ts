@@ -16,6 +16,10 @@ export function serializeDecimalValues<T = unknown>(value: T): T {
     return value;
   }
 
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    return value;
+  }
+
   if (isDecimalLike(value)) {
     return value.toNumber() as T;
   }

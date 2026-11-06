@@ -394,8 +394,13 @@ before aggregation. Never replace tenant constraints with a caller's filter.
 
 For exact scalar group keys (for example string `"001"`, `"true"`, or `"null"`),
 configure the service with `preserveJsonWhereTypes: true`. Send `where` as a JSON
-string for both grouping and leaf requests, and do **not** run `QueryTransformPipe`
-on these routes: its legacy coercion would erase those types before the service.
+string for both grouping and leaf requests. When using `QueryTransformPipe`, enable
+its matching opt-in: `new QueryTransformPipe({ preserveJsonWhereTypes: true })`.
+Its default legacy coercion would otherwise erase key types before the service.
+Configure the HTTP adapter's query parser for bracket notation, for example
+`app.getHttpAdapter().getInstance().set('query parser', value => qs.parse(value))`
+with Express and `qs`. Keep the normal transforming validation pipe enabled.
+The opt-in also preserves already typed object filters when pagination forwards them internally.
 Other consumers retain existing parsing defaults. Malformed or non-object JSON
 filters produce HTTP 400. Use the same access resolver on both routes.
 
@@ -404,3 +409,5 @@ and parent equality predicates in `where`. Leaf records use ordinary paginated
 queries. Group counts cover every matching accessible record, not only loaded rows.
 Offset pagination has no snapshot guarantee during concurrent writes; refresh the
 view after mutations. Relations and date intervals are outside this feature.
+
+Grouping keys consumed by the table must be JSON scalar values: strings, numbers, booleans, or null. Dates retain their normal ISO JSON encoding; Decimal-like values serialize to numbers. Binary and BigInt keys require application-owned encoding and filter conversion.
