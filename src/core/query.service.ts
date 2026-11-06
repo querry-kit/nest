@@ -1,6 +1,19 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
 
-import type { BaseDelegate, BaseDelegateTypeMap, Delegate, QueryOptionsMap } from '../dto/index.js';
+import type {
+  BaseDelegate,
+  BaseDelegateTypeMap,
+  Delegate,
+  GroupByDTO,
+  GroupByDelegate,
+  QueryOptionsMap,
+} from '../dto/index.js';
 import { handleQueryServiceError } from '../query-service/errors/handle-query-service-error.js';
 import { isForbiddenLike } from '../query-service/errors/is-forbidden-like.js';
 import type { QueryServiceOptions } from '../query-service/query-service.types.js';
@@ -171,6 +184,53 @@ export class QueryService<
   }
 
   /**
+   * Groups scalar fields with access-constrained aggregate results.
+   *
+   * @param {GroupByDTO<TypeMap>} options Group keys, filters, aggregates and pagination.
+   * @param {Ability} ability Optional access-control ability.
+   * @returns {Promise<T[]>} Group rows with Decimal-like values serialized.
+   */
+  async groupBy<T = unknown>(options: GroupByDTO<TypeMap>, ability?: Ability): Promise<T[]> {
+    const args: Record<string, unknown> = {};
+    try {
+      const allowed = ['by', 'where', 'having', 'orderBy', 'take', 'skip', '_count', '_sum', '_avg', '_min', '_max'];
+      if (!options || Object.keys(options).some((key) => !allowed.includes(key))) {
+        throw new BadRequestException('Invalid group-by options.');
+      }
+      if (
+        !Array.isArray(options.by) ||
+        !options.by.length ||
+        options.by.some((field) => typeof field !== 'string' || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(field)) ||
+        new Set(options.by).size !== options.by.length
+      ) {
+        throw new BadRequestException('by must contain unique scalar field names.');
+      }
+      for (const key of ['take', 'skip'] as const) {
+        const value = options[key];
+        if (value !== undefined && (!Number.isInteger(value) || value < (key === 'take' ? 1 : 0))) {
+          throw new BadRequestException('Invalid group pagination.');
+        }
+      }
+      if ((options.take !== undefined || options.skip !== undefined) && !options.orderBy) {
+        throw new BadRequestException('orderBy is required with take or skip.');
+      }
+      for (const key of allowed) {
+        const value = options[key as keyof typeof options];
+        if (value !== undefined) args[key] = key === 'by' ? value : parseQueryObject(value);
+      }
+      args.where = this.mergeAbilityWhere(options.where, ability);
+      const delegate = this.table as Table & Partial<GroupByDelegate>;
+      if (typeof delegate.groupBy !== 'function') {
+        throw new NotImplementedException('Delegate does not support groupBy.');
+      }
+      return serializeDecimalValues(await delegate.groupBy(args)) as T[];
+    } catch (error) {
+      if (isForbiddenLike(error)) throw new ForbiddenException('Insufficient permissions.');
+      this.handleError(error, options, args);
+    }
+  }
+
+  /**
    * Counts items matching query options.
    *
    * @param {Options['count']} options Count options.
@@ -230,7 +290,19 @@ export class QueryService<
    * @returns {unknown} Merged where object.
    */
   protected mergeAbilityWhere(where: unknown, ability?: Ability): unknown {
-    const parsedWhere = parseQueryObject(where ?? {});
+    let parsedWhere: unknown;
+    if (this.serviceOptions.preserveJsonWhereTypes) {
+      try {
+        parsedWhere = typeof where === 'string' ? (JSON.parse(where) as unknown) : (where ?? {});
+      } catch {
+        throw new BadRequestException('where must contain valid JSON.');
+      }
+      if (!parsedWhere || typeof parsedWhere !== 'object' || Array.isArray(parsedWhere)) {
+        throw new BadRequestException('where must be an object.');
+      }
+    } else {
+      parsedWhere = parseQueryObject(where ?? {});
+    }
 
     if (!ability || !this.serviceOptions.accessibleWhere || this.serviceOptions.subject === undefined) {
       return parsedWhere;

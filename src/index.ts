@@ -18,8 +18,25 @@ export { ApiPaginatedResponse } from './decorators/responses/api-paginated-respo
 export type { ApiPaginatedResponseOptions } from './decorators/responses/api-paginated-response.decorator';
 
 // DTOs
-export { AggregateDTO, CountDTO, FindByIdDTO, FindManyDTO, FindOneDTO, FindUniqueDTO, QueryDTO } from './dto/index';
-export type { BaseDelegate, BaseDelegateTypeMap, Delegate, DelegateTypeMap, QueryOptionsMap } from './dto/index';
+export {
+  AggregateDTO,
+  CountDTO,
+  FindByIdDTO,
+  FindManyDTO,
+  FindOneDTO,
+  FindUniqueDTO,
+  GroupByDTO,
+  QueryDTO,
+} from './dto/index';
+export type {
+  BaseDelegate,
+  BaseDelegateTypeMap,
+  Delegate,
+  DelegateTypeMap,
+  GroupByDelegate,
+  GroupByTypeMap,
+  QueryOptionsMap,
+} from './dto/index';
 
 // Fields
 export {

@@ -25,5 +25,8 @@ describe('decimal object utilities', () => {
     expect(serializeDecimalValues(undefined)).toBeUndefined();
     expect(serializeDecimalValues(1)).toBe(1);
     expect(serializeDecimalValues('1')).toBe('1');
+    const date = new Date('2026-01-01T00:00:00.000Z');
+    expect(serializeDecimalValues({ date })).toEqual({ date });
+    expect(JSON.stringify(serializeDecimalValues({ date }))).toBe('{"date":"2026-01-01T00:00:00.000Z"}');
   });
 });
