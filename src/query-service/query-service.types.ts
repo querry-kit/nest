@@ -23,4 +23,6 @@ export type QueryServiceOptions<TAbility = unknown, TSubject = unknown> = {
   accessibleWhere?: AccessibleWhereResolver<TAbility, TSubject>;
   /** Optional logger for unexpected delegate errors before they are masked as 500 responses. */
   errorLogger?: Pick<Console, 'error'>;
+  /** Preserve scalar types inside JSON-encoded where inputs. Use without QueryTransformPipe for typed group keys. */
+  preserveJsonWhereTypes?: boolean;
 };

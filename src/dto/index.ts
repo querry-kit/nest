@@ -5,5 +5,6 @@ export * from './find-by-id.dto.js';
 export * from './find-many.dto.js';
 export * from './find-one.dto.js';
 export * from './find-unique.dto.js';
+export * from './group-by.dto.js';
 export * from './query-options-map.js';
 export * from './query.dto.js';

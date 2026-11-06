@@ -359,3 +359,48 @@ Run `pnpm check` for source and ESM test type checking; CI runs it before buildi
 ## Development toolchain
 
 Use Node.js 26.13.0 LTS and the package manager pinned in `package.json`. Published library runtime compatibility remains unchanged. Builds use TypeScript 7; ESLint and compiler-API consumers use the TypeScript 6 compatibility package. Dependency overrides, where present, pin security fixes for transitive packages; validate tests and documentation builds when changing them.
+
+## Scalar grouping
+
+`groupBy<T>(options, ability?)` returns group rows, not resource models. Supported options:
+`by` (required non-empty array), `where`, `having`, `orderBy`, `take`, `skip`,
+`_count`, `_sum`, `_avg`, `_min`, `_max`. Pagination requires ordering. Prisma validates
+model fields, aggregate selectors, and the relationship between `by`, `having`, and ordering.
+`select`, `include`, `fields`, and `cursor` are unsupported.
+
+```ts
+await projectsService.groupBy({
+  by: ['status'],
+  where: { archived: false },
+  orderBy: { status: 'asc' },
+  take: 26,
+  _count: { _all: true },
+}, ability);
+```
+
+Extend your model type map with `orderByWithAggregationInput` and
+`scalarWhereWithAggregatesInput` using the corresponding generated Prisma types for
+strict ordering and `having` inputs. Existing delegates need no `groupBy` method;
+calling it on an unsupported delegate returns HTTP 501. A separate `GroupByDelegate`
+capability is exported for adapters. Decimal aggregate values serialize to numbers.
+
+Expose an application-owned `GET /projects/group-by` route before dynamic ID routes.
+Use a concrete subclass of `GroupByDTO<ProjectTypeMap>` with your normal validation
+pipe; the inherited Swagger decorators describe the options. Keep this route out of
+`ResourceQuery.query` model mapping and projection. Validate allowed grouping and
+aggregate fields against the endpoint's schema and the caller's field permissions.
+Pass the same ability to grouping and leaf queries: access conditions are applied
+before aggregation. Never replace tenant constraints with a caller's filter.
+
+For exact scalar group keys (for example string `"001"`, `"true"`, or `"null"`),
+configure the service with `preserveJsonWhereTypes: true`. Send `where` as a JSON
+string for both grouping and leaf requests, and do **not** run `QueryTransformPipe`
+on these routes: its legacy coercion would erase those types before the service.
+Other consumers retain existing parsing defaults. Malformed or non-object JSON
+filters produce HTTP 400. Use the same access resolver on both routes.
+
+Nested table grouping calls `groupBy` once per level with one `by` field, `_count._all`,
+and parent equality predicates in `where`. Leaf records use ordinary paginated
+queries. Group counts cover every matching accessible record, not only loaded rows.
+Offset pagination has no snapshot guarantee during concurrent writes; refresh the
+view after mutations. Relations and date intervals are outside this feature.
