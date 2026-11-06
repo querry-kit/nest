@@ -1,5 +1,21 @@
 # @querry-kit/nest
 
+## 2.0.0
+
+### Major Changes
+
+- 3077102: Require Node.js 26.13.0 or newer and drop Node.js 24 support. Upgrade application runtimes and CI before updating.
+
+### Minor Changes
+
+- 05e6635: Add access-constrained scalar grouping and opt-in typed JSON filters.
+- 05e6635: Preserve typed group keys through global query pipes and pagination; retain Date serialization.
+
+### Patch Changes
+
+- 3077102: Refresh compatible dependencies and the lockfile while preserving the TypeScript compatibility toolchain and security overrides.
+- 05e6635: Keep grouping documentation aligned with the current Node.js 26 baseline.
+
 ## 1.1.2
 
 ### Patch Changes
