@@ -1,5 +1,15 @@
 # @querry-kit/nest
 
+## 2.1.0
+
+### Minor Changes
+
+- 6b540ed: Support access-control abilities and type-preserving filters in QueryService.aggregate.
+
+### Patch Changes
+
+- bb75b9a: Use patched transitive versions of minimatch in the development toolchain.
+
 ## 2.0.0
 
 ### Major Changes
