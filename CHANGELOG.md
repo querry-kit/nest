@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 2.1.1
+
+### Patch Changes
+
+- d6493b5: Refresh and verify compatible development dependencies.
+
 ## 2.1.0
 
 ### Minor Changes
