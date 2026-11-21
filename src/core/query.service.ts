@@ -166,21 +166,30 @@ export class QueryService<
    * Runs an aggregate query.
    *
    * @param {Options['aggregate']} options Aggregate options.
+   * @param {Ability} ability Optional access-control ability.
    * @returns {Promise<unknown>} Serialized aggregate result.
    */
-  async aggregate(options: Options['aggregate']): Promise<unknown> {
-    const args: Parameters<DelegateType['aggregate']>[0] = {
-      ...options,
-      where: parseQueryObject(options.where),
-      orderBy: parseQueryObject(options.orderBy),
-      cursor: parseQueryObject(options.cursor),
-    };
+  async aggregate(options: Options['aggregate'], ability?: Ability): Promise<unknown> {
+    try {
+      const args: Parameters<DelegateType['aggregate']>[0] = {
+        ...options,
+        where:
+          ability || this.serviceOptions.preserveJsonWhereTypes
+            ? this.mergeAbilityWhere(options.where, ability)
+            : parseQueryObject(options.where),
+        orderBy: parseQueryObject(options.orderBy),
+        cursor: parseQueryObject(options.cursor),
+      };
 
-    const cleanedArgs = Object.fromEntries(
-      Object.entries(args as Record<string, unknown>).filter(([, value]) => value !== undefined),
-    );
+      const cleanedArgs = Object.fromEntries(
+        Object.entries(args as Record<string, unknown>).filter(([, value]) => value !== undefined),
+      );
 
-    return serializeDecimalValues(await this.table.aggregate(cleanedArgs));
+      return serializeDecimalValues(await this.table.aggregate(cleanedArgs));
+    } catch (error) {
+      if (isForbiddenLike(error)) throw new ForbiddenException('Insufficient permissions.');
+      throw error;
+    }
   }
 
   /**

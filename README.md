@@ -402,6 +402,8 @@ For exact scalar group keys (for example string `"001"`, `"true"`, or `"null"`),
 configure the service with `preserveJsonWhereTypes: true`. Send `where` as a JSON
 string for both grouping and leaf requests. When using `QueryTransformPipe`, enable
 its matching opt-in: `new QueryTransformPipe({ preserveJsonWhereTypes: true })`.
+
+Pass an ability as the second argument to `aggregate(options, ability)` to apply the same row scope as `groupBy` and `count`. The service honors `preserveJsonWhereTypes` for aggregate filters.
 Its default legacy coercion would otherwise erase key types before the service.
 Configure the HTTP adapter's query parser for bracket notation, for example
 `app.getHttpAdapter().getInstance().set('query parser', value => qs.parse(value))`
