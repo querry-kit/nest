@@ -156,6 +156,35 @@ describe.each([QueryService, CoreQueryService])('QueryService %p', (QueryService
     ]);
   });
 
+  it('scopes aggregates and preserves validated scalar filter types', async () => {
+    const delegate = new TestDelegate();
+    const service = new QueryService(delegate, {
+      subject: 'Book',
+      accessibleWhere: () => ({ organizationId: 'org' }),
+      preserveJsonWhereTypes: true,
+    });
+
+    await service.aggregate({ where: { id: '001' }, _count: true } as never, { can: true });
+
+    expect(delegate.calls.at(-1)).toEqual([
+      'aggregate',
+      { where: { AND: [{ organizationId: 'org' }, { id: '001' }] }, _count: true },
+    ]);
+  });
+
+  it('rejects aggregates when the access resolver denies the subject', async () => {
+    const delegate = new TestDelegate();
+    const service = new QueryService(delegate, {
+      subject: 'Book',
+      accessibleWhere: () => {
+        throw Object.assign(new Error('denied'), { name: 'ForbiddenError' });
+      },
+    });
+
+    await expect(service.aggregate({ _count: true } as never, {})).rejects.toThrow('Insufficient permissions.');
+    expect(delegate.calls).toEqual([]);
+  });
+
   it('uses default pagination when query page options are omitted', async () => {
     const delegate = new TestDelegate();
     const service = new QueryService(delegate);
