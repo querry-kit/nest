@@ -362,7 +362,7 @@ Use Node.js 26.13.0 LTS and the package manager pinned in `package.json`. This r
 
 ### Dependency maintenance
 
-Development and integration tests use NestJS 12.3.3 and Swagger 12.1.0. Swagger 12.1 requires validation decorators on properties used with `PartialType()` and a whitelisting `ValidationPipe`; review application DTOs when updating Swagger. See the [upstream behavior changes](https://github.com/nestjs/swagger/releases/tag/12.1.0).
+Development and integration tests use NestJS 12.6.0 and Swagger 12.1.2. Swagger 12.1 requires validation decorators on properties used with `PartialType()` and a whitelisting `ValidationPipe`; review application DTOs when updating Swagger. See the [upstream behavior changes](https://github.com/nestjs/swagger/releases/tag/12.1.0).
 
 Dependency refreshes retain pnpm 11.28.9, the existing TypeScript 6/7 split, and security overrides. Candidates published less than 24 hours ago are deferred; dependency major migrations are outside this update.
 
