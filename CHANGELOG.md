@@ -1,5 +1,11 @@
 # @querry-kit/nest
 
+## 2.1.2
+
+### Patch Changes
+
+- f8ebdb0: Validate the existing NestJS peer contract against NestJS 12.6.
+
 ## 2.1.1
 
 ### Patch Changes
