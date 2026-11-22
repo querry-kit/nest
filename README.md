@@ -1,5 +1,7 @@
 # @querry-kit/nest <!-- omit in toc -->
 
+> **This repository has moved.** Source, issues and pull requests are now maintained in the [Querry Kit monorepo](https://github.com/querry-kit/querry-kit/tree/main/packages/nest). This repository is retained for historical links and releases.
+
 [![npm](https://img.shields.io/npm/v/%40querry-kit%2Fnest?label=npm&logo=npm&logoColor=white&style=for-the-badge)](https://www.npmjs.com/package/@querry-kit/nest)
 [![npm downloads](https://img.shields.io/npm/dm/%40querry-kit%2Fnest?label=downloads&logo=npm&logoColor=white&style=for-the-badge)](https://www.npmjs.com/package/@querry-kit/nest)
 [![license](https://img.shields.io/npm/l/%40querry-kit%2Fnest?label=license&style=for-the-badge)](LICENSE)
